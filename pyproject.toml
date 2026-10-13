@@ -36,7 +36,7 @@ clef = ["unsafe-eval[hf]", "kernels>=0.17,<0.18", "torchvision", "transformers>=
 clm = ["contrastive-lm==0.1.0", "unsafe-eval[vllm]"]
 # Exact: the package builds GLiNER2's input, so upgrading it changes the protocol.
 gliner = ["gliner2[local]==2.0.0"]
-google = ["google-genai>=1.69,<2"]
+google = ["google-genai>=2.29.0,<3"]
 hf = [
   "accelerate>=1.0",
   "torch>=2.4",
@@ -76,7 +76,7 @@ dev = [
   # The gemini protocol's tests check how Inspect's google provider sends a reasoning
   # effort, which needs the SDK, so it is a development dependency as well as the
   # `google` extra.
-  "google-genai>=1.69,<2",
+  "google-genai>=2.29.0,<3",
   "hatch-vcs",
   "hatchling>=1.27",
   "pre-commit>=4,<5",
