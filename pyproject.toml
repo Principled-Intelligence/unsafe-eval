@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling>=1.27"]
+requires = ["hatchling>=1.27", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "unsafe-eval"
-version = "1.0.0"
+dynamic = ["version"]
 description = "Reproducible safety evaluations for open- and closed-weight language models using Inspect AI."
 readme = "README.md"
 license = "Apache-2.0"
@@ -77,6 +77,7 @@ dev = [
   # effort, which needs the SDK, so it is a development dependency as well as the
   # `google` extra.
   "google-genai>=1.69,<2",
+  "hatch-vcs",
   "hatchling>=1.27",
   "pre-commit>=4,<5",
   "pytest>=9.0.3,<10",
@@ -93,6 +94,9 @@ dev = [
 # scores identically on both (docs/reproducibility.md). An override replaces every transformers
 # requirement, so this one keeps vllm's floor.
 override-dependencies = ["transformers>=5.5.3"]
+
+[tool.hatch.version]
+source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/unsafe_eval"]

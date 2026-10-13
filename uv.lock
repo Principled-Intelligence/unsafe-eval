@@ -1884,6 +1884,19 @@ wheels = [
 ]
 
 [[package]]
+name = "hatch-vcs"
+version = "0.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "hatchling" },
+    { name = "setuptools-scm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6b/b0/4cc743d38adbee9d57d786fa496ed1daadb17e48589b6da8fa55717a0746/hatch_vcs-0.5.0.tar.gz", hash = "sha256:0395fa126940340215090c344a2bf4e2a77bcbe7daab16f41b37b98c95809ff9", size = 11424, upload-time = "2025-05-27T05:16:04.49Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5f/48/1f85cee4b7b4f40b9b814b1febbc661bda6ced9649e410a0b74f6e415dd0/hatch_vcs-0.5.0-py3-none-any.whl", hash = "sha256:b49677dbdc597460cc22d01b27ab3696f5e16a21ecf2700fb01bc28e1f2a04a7", size = 8507, upload-time = "2025-05-27T05:16:03.184Z" },
+]
+
+[[package]]
 name = "hatchling"
 version = "1.32.4"
 source = { registry = "https://pypi.org/simple" }
@@ -6279,6 +6292,20 @@ wheels = [
 ]
 
 [[package]]
+name = "setuptools-scm"
+version = "10.3.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "setuptools" },
+    { name = "vcs-versioning" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/85/d8/fc143f88819ccf10ba2388ba86732ee2de193e578234e25a783f6cc14bf7/setuptools_scm-10.3.4.tar.gz", hash = "sha256:a69f28bfc245608781205e912faae437c2b2165773afa4e7b979d77447a69dd2", size = 78410, upload-time = "2026-09-23T19:21:42.95Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/da/f5/54538a1f17ea753c42b0928dc2e62986d463f8c393340b9a1e602f2d4dd9/setuptools_scm-10.3.4-py3-none-any.whl", hash = "sha256:82f34c3e3084fc2b57d397200637cc13f2338004052d2fee47baa5f0e902464e", size = 33366, upload-time = "2026-09-23T19:21:41.607Z" },
+]
+
+[[package]]
 name = "shellingham"
 version = "1.5.4"
 source = { registry = "https://pypi.org/simple" }
@@ -7001,7 +7028,6 @@ wheels = [
 
 [[package]]
 name = "unsafe-eval"
-version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },
@@ -7087,6 +7113,7 @@ vllm = [
 [package.dev-dependencies]
 dev = [
     { name = "google-genai" },
+    { name = "hatch-vcs" },
     { name = "hatchling" },
     { name = "pre-commit" },
     { name = "pytest" },
@@ -7098,36 +7125,57 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "accelerate", marker = "extra == 'all'", specifier = ">=1.0" },
+    { name = "accelerate", marker = "extra == 'clef'", specifier = ">=1.0" },
     { name = "accelerate", marker = "extra == 'hf'", specifier = ">=1.0" },
+    { name = "anthropic", marker = "extra == 'all'", specifier = ">=1.0,<2" },
     { name = "anthropic", marker = "extra == 'anthropic'", specifier = ">=1.0,<2" },
     { name = "anyio", specifier = ">=4.14,<5" },
+    { name = "arctic-inference", marker = "sys_platform == 'linux' and extra == 'all'", specifier = "==0.1.1" },
+    { name = "arctic-inference", marker = "sys_platform == 'linux' and extra == 'clm'", specifier = "==0.1.1" },
+    { name = "arctic-inference", marker = "sys_platform == 'linux' and extra == 'orbitals'", specifier = "==0.1.1" },
     { name = "arctic-inference", marker = "sys_platform == 'linux' and extra == 'vllm'", specifier = "==0.1.1" },
     { name = "click", specifier = ">=8.1,<9" },
+    { name = "contrastive-lm", marker = "extra == 'all'", specifier = "==0.1.0" },
     { name = "contrastive-lm", marker = "extra == 'clm'", specifier = "==0.1.0" },
     { name = "datasets", specifier = ">=5.0.1,<6" },
     { name = "fsspec", specifier = ">=2023.1" },
     { name = "gliner2", extras = ["local"], marker = "extra == 'gliner'", specifier = "==2.0.0" },
+    { name = "google-genai", marker = "extra == 'all'", specifier = ">=1.69,<2" },
     { name = "google-genai", marker = "extra == 'google'", specifier = ">=1.69,<2" },
     { name = "huggingface-hub", specifier = ">=0.25,<3" },
     { name = "inspect-ai", specifier = ">=0.3.273,<0.4" },
+    { name = "kernels", marker = "extra == 'all'", specifier = ">=0.17,<0.18" },
     { name = "kernels", marker = "extra == 'clef'", specifier = ">=0.17,<0.18" },
+    { name = "laya", marker = "extra == 'all'", specifier = "==0.3.22" },
     { name = "laya", marker = "extra == 'laya'", specifier = "==0.3.22" },
+    { name = "mistral-common", marker = "extra == 'all'", specifier = ">=1.11.5" },
+    { name = "mistral-common", marker = "extra == 'clm'", specifier = ">=1.11.5" },
+    { name = "mistral-common", marker = "extra == 'orbitals'", specifier = ">=1.11.5" },
     { name = "mistral-common", marker = "extra == 'vllm'", specifier = ">=1.11.5" },
+    { name = "openai", marker = "extra == 'all'", specifier = ">=3.1,<4" },
     { name = "openai", marker = "extra == 'openai'", specifier = ">=3.1,<4" },
     { name = "openai", marker = "extra == 'openrouter'", specifier = ">=3.1,<4" },
+    { name = "orbitals", extras = ["scope-guard-vllm"], marker = "sys_platform == 'linux' and extra == 'all'", specifier = "==0.6.1" },
     { name = "orbitals", extras = ["scope-guard-vllm"], marker = "sys_platform == 'linux' and extra == 'orbitals'", specifier = "==0.6.1" },
     { name = "pydantic", specifier = ">=2.13,<3" },
     { name = "pyyaml", specifier = ">=6,<7" },
     { name = "rich", specifier = ">=13,<16" },
+    { name = "torch", marker = "extra == 'all'", specifier = ">=2.4" },
+    { name = "torch", marker = "extra == 'clef'", specifier = ">=2.4" },
     { name = "torch", marker = "extra == 'hf'", specifier = ">=2.4" },
+    { name = "torchvision", marker = "extra == 'all'" },
     { name = "torchvision", marker = "extra == 'clef'" },
+    { name = "transformers", marker = "extra == 'all'", specifier = ">=4.45" },
+    { name = "transformers", marker = "extra == 'all'", specifier = ">=5.10" },
+    { name = "transformers", marker = "extra == 'clef'", specifier = ">=4.45" },
     { name = "transformers", marker = "extra == 'clef'", specifier = ">=5.10" },
     { name = "transformers", marker = "extra == 'hf'", specifier = ">=4.45" },
+    { name = "typesafe-sdk", marker = "extra == 'all'", specifier = ">=0.7.1,<1" },
     { name = "typesafe-sdk", marker = "extra == 'typesafe'", specifier = ">=0.7.1,<1" },
-    { name = "unsafe-eval", extras = ["anthropic", "clef", "clm", "google", "hf", "laya", "openai", "openrouter", "orbitals", "typesafe", "vllm"], marker = "extra == 'all'" },
-    { name = "unsafe-eval", extras = ["hf"], marker = "extra == 'clef'" },
-    { name = "unsafe-eval", extras = ["vllm"], marker = "extra == 'clm'" },
-    { name = "unsafe-eval", extras = ["vllm"], marker = "extra == 'orbitals'" },
+    { name = "vllm", marker = "sys_platform == 'linux' and extra == 'all'", specifier = ">=0.31,<0.32" },
+    { name = "vllm", marker = "sys_platform == 'linux' and extra == 'clm'", specifier = ">=0.31,<0.32" },
+    { name = "vllm", marker = "sys_platform == 'linux' and extra == 'orbitals'", specifier = ">=0.31,<0.32" },
     { name = "vllm", marker = "sys_platform == 'linux' and extra == 'vllm'", specifier = ">=0.31,<0.32" },
 ]
 provides-extras = ["all", "anthropic", "clef", "clm", "gliner", "google", "hf", "laya", "openai", "openrouter", "orbitals", "typesafe", "vllm"]
@@ -7135,6 +7183,7 @@ provides-extras = ["all", "anthropic", "clef", "clm", "gliner", "google", "hf", 
 [package.metadata.requires-dev]
 dev = [
     { name = "google-genai", specifier = ">=1.69,<2" },
+    { name = "hatch-vcs" },
     { name = "hatchling", specifier = ">=1.27" },
     { name = "pre-commit", specifier = ">=4,<5" },
     { name = "pytest", specifier = ">=9.0.3,<10" },
@@ -7224,6 +7273,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/9f/83/f421a077712c1e87603bfec62744c3cd3a2f4b47378025db3d740df9af0d/uvloop-0.23.0-cp315-cp315t-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:12634f15e6625f78b3f2922f91404c4d7173487eba11746764153f556e9852dc", size = 4661763, upload-time = "2026-10-01T03:16:38.719Z" },
     { url = "https://files.pythonhosted.org/packages/f5/62/25dcaa6b7e7b48f82ce633854ce96597ab768f9650931f4f86c572de392c/uvloop-0.23.0-cp315-cp315t-musllinux_1_2_aarch64.whl", hash = "sha256:378188efbb1524f2219d05246a3e1e5907217848d2882144dff59585f1b81d55", size = 4421324, upload-time = "2026-10-01T03:16:40.488Z" },
     { url = "https://files.pythonhosted.org/packages/05/46/04628239b43dcef703af314202a3307d6060918e2d76aa86c5b1188f5551/uvloop-0.23.0-cp315-cp315t-musllinux_1_2_x86_64.whl", hash = "sha256:4b8e207c67d207a8608fec57e116511030af3495dc0109b8c333cf9cb412b16f", size = 4462501, upload-time = "2026-10-01T03:16:42.359Z" },
+]
+
+[[package]]
+name = "vcs-versioning"
+version = "2.6.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ad/e7/2a691db7d076b75d099fdba1a14cd966931f2aeb591e77f6d22f15097326/vcs_versioning-2.6.0.tar.gz", hash = "sha256:22e9159288e2d8bca2fa6f6c31c34c9c66aec157f60e9e526f5d160d2516d60f", size = 166800, upload-time = "2026-10-06T22:21:55.024Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/73/1d/ad4064bf12f4503bf61e65d74c93c523672776d25ee0a06aaf42ae09ef3f/vcs_versioning-2.6.0-py3-none-any.whl", hash = "sha256:f8bebd1302ebc12e67ceb30fc7dd698ec969414b6fa43b30c3f14ac9b1e72c41", size = 123154, upload-time = "2026-10-06T22:21:53.267Z" },
 ]
 
 [[package]]

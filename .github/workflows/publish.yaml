@@ -1,49 +1,32 @@
-name: Publish to PyPI
+name: Publish
 
-# Release tags come from the Release Flow create-release process.
+# `published` (not `created`): a draft release that is published later never fires `created`.
 on:
-  push:
-    tags: ["v*"]
+  release:
+    types:
+      - published
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Install uv
-        # setup-uv publishes only exact version tags.
-        uses: astral-sh/setup-uv@v10.3.0
-
-      - name: Build the sdist and wheel
-        run: uv build
-
-      - name: Upload the distributions
-        uses: actions/upload-artifact@v7
-        with:
-          name: dist
-          path: dist/
-
   publish:
-    needs: build
     runs-on: ubuntu-latest
     environment:
       name: pypi
       url: https://pypi.org/project/unsafe-eval/
     permissions:
-      # PyPI trusted publishing exchanges this token for a short-lived upload credential.
       id-token: write
-
+      contents: read
     steps:
-      - name: Download the distributions
-        uses: actions/download-artifact@v8
+      - name: Checkout
+        uses: actions/checkout@v7
         with:
-          name: dist
-          path: dist/
+          # hatch-vcs derives the package version from git tags
+          fetch-depth: 0
+      - name: Install uv
+        # setup-uv publishes only exact version tags.
+        uses: astral-sh/setup-uv@v10.3.0
 
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Build unsafe-eval
+        run: uv build
+      - name: Publish unsafe-eval
+        # --check-url skips files already on PyPI so workflow re-runs stay green
+        run: uv publish --check-url https://pypi.org/simple/
