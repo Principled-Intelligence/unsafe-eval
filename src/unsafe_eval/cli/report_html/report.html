@@ -153,8 +153,6 @@ th[aria-sort="ascending"] .metric::after { content: "↑"; }
 td.num { font-family: var(--mono); }
 .bar { display: block; height: 4px; border-radius: 999px; background: var(--hover); overflow: hidden; }
 .bar > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--violet)); }
-/* As wide as the three-decimal value above it. */
-td .bar { width: 5ch; margin: 6px 0 0 auto; }
 td.best { color: var(--accent); font-weight: 600; }
 td.empty, td.incomplete { color: var(--muted); }
 td.incomplete { font-style: italic; }
@@ -564,7 +562,6 @@ function averageCell(row, average, name, base, best) {
   }
   shade(td, name, value, base ? { value: average.values[base.label] } : null, best);
   if (base) addFlags(td, average.benchmarks.flatMap((b) => flags(row, base, b).map((r) => `${b}: ${r}`)));
-  else if (BETTER.has(name)) td.append(bar(value));
   return td;
 }
 
