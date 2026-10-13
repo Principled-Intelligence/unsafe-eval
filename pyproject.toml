@@ -28,7 +28,7 @@ dependencies = [
 [project.optional-dependencies]
 # Without `gliner`: pip ignores the transformers override in [tool.uv], so the set would not resolve.
 all =["unsafe-eval[anthropic,clef,clm,google,hf,laya,openai,openrouter,orbitals,typesafe,vllm]"]
-anthropic = ["anthropic>=1.0,<2"]
+anthropic = ["anthropic>=1.13.0,<2"]
 # Clef's loader builds its image and video processors even for text, and its model class needs
 # transformers 5. `kernels` serves the FP8 matmul for `quantization: fp8`.
 clef = ["unsafe-eval[hf]", "kernels>=0.17,<0.18", "torchvision", "transformers>=5.10"]
