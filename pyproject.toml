@@ -52,7 +52,7 @@ orbitals = [
   "orbitals[scope-guard-vllm]==0.6.1; sys_platform == 'linux'",
   "unsafe-eval[vllm]",
 ]
-typesafe = ["typesafe-sdk>=0.7.1,<1"]
+typesafe = ["typesafe-sdk>=0.7.4,<1"]
 vllm = [
   # vLLM's suffix speculative decoding; vLLM names this exact version.
   "arctic-inference==0.1.1; sys_platform == 'linux'",
@@ -86,7 +86,7 @@ dev = [
   "ty==0.0.84",
   # The TypeSafe provider annotates the SDK's response types and the tests build
   # them, so the SDK is a development dependency as well as the `typesafe` extra.
-  "typesafe-sdk>=0.7.1,<1",
+  "typesafe-sdk>=0.7.4,<1",
 ]
 
 [tool.uv]
