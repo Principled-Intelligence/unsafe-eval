@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "Unsafe-Eval: A framework for reproducible AI safety evaluation"
+type: software
+date-released: 2026-10-13
+authors:
+  - family-names: Conia
+    given-names: Simone
+  - family-names: Orlando
+    given-names: Riccardo
+version: 1.0.0
+repository-code: "https://github.com/principled-intelligence/unsafe-eval"
+license: Apache-2.0

@@ -1,0 +1,22 @@
+# Claude Opus 5 over Anthropic's API: claude protocol, anthropic route.
+# Same prompt and options as openrouter/claude-opus-5, which reaches the same build over
+# OpenRouter, so comparing the two isolates the route.
+# The model ID `claude-opus-5` names one build: Anthropic's Models API returns it
+# unchanged, while an alias resolves to a dated snapshot.
+# The protocol sends no seed, because Anthropic's API has none.
+# Each sample carries its own policy, which is written into the benchmark's instruction,
+# so the sample is judged against the policy it was labelled under.
+# `reasoning_effort` is Claude Opus 5's API default, `high`.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: claude
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+    protocol_options:
+      route: anthropic
+      output_fields: ["user_safety"]
+      reasoning_effort: high
+
+model:
+  model: anthropic/claude-opus-5

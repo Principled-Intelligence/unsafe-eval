@@ -1,0 +1,19 @@
+task:
+  task: unsafe_eval/dynaguardrail_prompt_safety
+  args:
+    protocol: nemotron-3.5-content-safety
+    dataset_revision: 3c21998805b692819e527f88702f761e33f6a013
+    protocol_options:
+      route: vllm
+      request_categories: false
+
+model:
+  model: vllm/nvidia/Nemotron-3.5-Content-Safety
+  args:
+    revision: 35645ed3543b7e7ffaed2e788699e57a5051497c
+    dtype: bfloat16
+    max_model_len: 32768
+    max_num_batched_tokens: 32768
+
+generate_config:
+  max_connections: 4

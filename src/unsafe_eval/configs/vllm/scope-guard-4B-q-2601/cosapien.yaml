@@ -1,0 +1,18 @@
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: scope-guard-2601
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+    protocol_options:
+      include_evidence: true
+
+model:
+  model: vllm/principled-intelligence/scope-guard-4B-q-2601
+  args:
+    revision: 29fcf6a99b4487f5cbccfbf506d95d7c1724bc93
+    dtype: bfloat16
+    max_model_len: 30000
+    max_num_batched_tokens: 32768
+
+generate_config:
+  max_connections: 4

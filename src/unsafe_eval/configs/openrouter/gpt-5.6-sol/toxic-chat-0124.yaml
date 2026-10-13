@@ -1,0 +1,27 @@
+# GPT-5.6 Sol over OpenRouter: gpt protocol, openrouter route.
+# Same prompt and options as openrouter/gpt-5.6-luna, so the two differ only in the model,
+# and as openai/gpt-5.6-sol, which reaches this model over OpenAI's API.
+# The model is the dated snapshot `gpt-5.6-sol-20260709`; the `openai/gpt-5.6-sol` alias
+# moves when a new build ships.
+# Routing is pinned to OpenAI with fallbacks off. OpenRouter also serves this model from
+# Amazon Bedrock, which accepts neither `response_format` nor `seed`; a request sent there
+# would lose the response schema, and every sample would score invalid.
+# The protocol pins seed 0, which OpenRouter passes on over chat completions.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/toxic_chat_prompt_safety
+  args:
+    protocol: gpt
+    dataset_revision: 29df8e4dba60e1f4af4b4075c0705c5b313548a8
+    protocol_options:
+      route: openrouter
+      output_fields: ["user_safety"]
+      reasoning_effort: medium
+
+model:
+  model: openrouter/openai/gpt-5.6-sol-20260709
+  args:
+    provider:
+      order: ["openai"]
+      allow_fallbacks: false
+      require_parameters: true

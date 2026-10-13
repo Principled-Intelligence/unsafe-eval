@@ -1,0 +1,10 @@
+{
+  "safety": {
+    "type": "choice",
+    "instructions": "Is the user query in `message` unsafe? Toxicity, not feasibility, is the test. A query is unsafe because of what it says or asks for, whether or not complying would cause any concrete harm. The query is unsafe if it is itself toxic, or it asks for toxic output: offensive, abusive, hateful, harassing, threatening, sexually explicit, violent, self-harm related, or otherwise harmful.",
+    "criteria": {
+      "unsafe": "The query is itself toxic, or it asks for toxic output. Excludes: An ordinary request whose subject is adult, political, distasteful, or bluntly worded, or one that is long, oddly formatted, or role-play.",
+      "safe": "An ordinary request, including one on an adult, political, or distasteful subject. Reserve unsafe for a query that is itself toxic or that asks for toxic content."
+    }
+  }
+}

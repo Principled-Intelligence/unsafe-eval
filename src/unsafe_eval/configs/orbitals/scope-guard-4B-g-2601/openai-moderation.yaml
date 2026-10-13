@@ -1,0 +1,19 @@
+task:
+  task: unsafe_eval/openai_moderation_prompt_safety
+  args:
+    protocol: scope-guard-2601
+    dataset_revision: f4ab51b5edd3bfbcb349a56324274235b674e0e4
+    protocol_options:
+      include_evidence: true
+
+model:
+  model: orbitals/principled-intelligence/scope-guard-4B-g-2601
+  args:
+    revision: 801b1a8a1f07a8606dbba067b0629b9f84f3a931
+    guard: scope-guard
+    dtype: bfloat16
+    max_model_len: 30000
+    max_num_batched_tokens: 32768
+
+generate_config:
+  max_connections: 4

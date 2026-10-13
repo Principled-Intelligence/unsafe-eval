@@ -1,0 +1,22 @@
+# GPT-5.6 Luna over OpenAI's API: gpt protocol, openai route.
+# Same prompt and options as openrouter/gpt-5.6-luna, which reaches this model over
+# OpenRouter, so comparing the two isolates the route.
+# The model is the `gpt-5.6-luna` alias, because OpenAI publishes no dated snapshot for
+# Luna. The build that answers is whatever the alias points to on the day, and the run
+# records a null model revision, so this configuration is a runnable example rather than a
+# reproducible run.
+# The protocol sends no seed on this route: Inspect sends GPT-5 models on `openai/` to the
+# Responses API, which ignores one.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/wildguard_mix_prompt_safety
+  args:
+    protocol: gpt
+    dataset_revision: d29c47f41c8b51348b5c8e8c81c039b3132b66d1
+    protocol_options:
+      route: openai
+      output_fields: ["user_safety"]
+      reasoning_effort: medium
+
+model:
+  model: openai/gpt-5.6-luna

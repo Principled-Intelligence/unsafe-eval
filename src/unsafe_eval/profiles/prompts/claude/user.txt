@@ -1,0 +1,7 @@
+<policy>
+{instruction}
+</policy>
+
+<content>
+{prompt}
+</content>

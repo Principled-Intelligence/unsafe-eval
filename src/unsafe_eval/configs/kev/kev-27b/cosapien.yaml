@@ -1,0 +1,17 @@
+# Kev-27B, an open reconstruction of Jev, under the jev protocol. The `kev` provider
+# serves the pinned hub commit with Kev's code at `kev_revision`, its `kev-1.0` tag.
+# Its bf16 weights take 51 GB, so it needs an 80 GB GPU.
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: jev
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+
+model:
+  model: kev/jaredpalmer/kev-27b
+  args:
+    revision: af0e6d551bdc2cc724f3e9d7a8bee1cd4fb8f7bf
+    kev_revision: 6b719c3c3f367295f6ef336f4f751cf5ff970abc
+
+generate_config:
+  max_connections: 4

@@ -1,0 +1,15 @@
+# Clef-Flash, under the clef protocol, run locally by this package's `clef` provider at the
+# pinned hub commit.
+task:
+  task: unsafe_eval/harmbench_prompt_safety
+  args:
+    protocol: clef
+    dataset_revision: 8e1604d1171fe8a48d8febecd22f600e462bdcdd
+
+model:
+  model: clef/Cloudflare/clef-flash
+  args:
+    revision: 17f0b0ad64efb65d273590632833508766b2aae6
+
+generate_config:
+  max_connections: 4

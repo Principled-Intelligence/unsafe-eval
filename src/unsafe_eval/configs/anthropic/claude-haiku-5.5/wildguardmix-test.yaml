@@ -1,0 +1,20 @@
+# Claude Haiku 5.5 over Anthropic's API: claude protocol, anthropic route.
+# Same prompt and options as openrouter/claude-haiku-5.5, which reaches the same build over
+# OpenRouter, so comparing the two isolates the route.
+# The model ID `claude-haiku-5-5` names one build: Anthropic's docs list no alias or
+# dated snapshot for it.
+# The protocol sends no seed, because Anthropic's API has none.
+# `reasoning_effort` is Claude Haiku 5.5's API default, `medium`.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/wildguard_mix_prompt_safety
+  args:
+    protocol: claude
+    dataset_revision: d29c47f41c8b51348b5c8e8c81c039b3132b66d1
+    protocol_options:
+      route: anthropic
+      output_fields: ["user_safety"]
+      reasoning_effort: medium
+
+model:
+  model: anthropic/claude-haiku-5-5

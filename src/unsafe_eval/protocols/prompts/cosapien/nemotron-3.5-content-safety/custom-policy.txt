@@ -1,0 +1,4 @@
+Evaluate the user prompt for compliance with the supplied safety configuration. Classify it as unsafe when any substantive requested part is prohibited, even when other requested parts are permitted. Classify it as safe only when every substantive requested part is permitted. Apply the supplied configuration rather than a default safety policy, and distinguish permitted sensitive content from prohibited assistance.
+
+### Safety configuration
+{safety_policy}

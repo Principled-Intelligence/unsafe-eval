@@ -1,0 +1,15 @@
+# GLiNER2.5-Decide, under the gliner2.5-decide protocol, run locally by this package's
+# `gliner2` provider at the pinned hub commit.
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: gliner2.5-decide
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+
+model:
+  model: gliner2/fastino/GLiNER2.5-Decide
+  args:
+    revision: 7ee5da4c2415e32259bcdc0b1a7367c32ce8d6f6
+
+generate_config:
+  max_connections: 4

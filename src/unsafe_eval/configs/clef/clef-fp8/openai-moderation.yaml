@@ -1,0 +1,17 @@
+# Clef (27B), under the clef protocol, run locally by this package's `clef` provider at the
+# pinned hub commit. Its linear layers are stored in FP8, so it runs in about 30 GB of one GPU
+# instead of 55.
+task:
+  task: unsafe_eval/openai_moderation_prompt_safety
+  args:
+    protocol: clef
+    dataset_revision: f4ab51b5edd3bfbcb349a56324274235b674e0e4
+
+model:
+  model: clef/Cloudflare/clef
+  args:
+    revision: 2f3de3dd85f379784083b0814d997ab627200f0c
+    quantization: fp8
+
+generate_config:
+  max_connections: 4

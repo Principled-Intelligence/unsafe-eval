@@ -1,0 +1,27 @@
+# Claude Haiku 5.5 over OpenRouter: claude protocol, openrouter route.
+# Same prompt and options as anthropic/claude-haiku-5.5, which reaches the same build over
+# Anthropic's API.
+# The model is OpenRouter's dated slug `claude-haiku-5.5-20261007`; the
+# `anthropic/claude-haiku-5.5` alias moves when a new build ships.
+# Routing is pinned to Anthropic with fallbacks off. OpenRouter also serves this model
+# from other clouds; the pin keeps it on the provider the anthropic route reaches.
+# The protocol sends no seed, because OpenRouter's Anthropic endpoints take none.
+# `reasoning_effort` is Claude Haiku 5.5's API default, `medium`.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/aegis_prompt_safety
+  args:
+    protocol: claude
+    dataset_revision: d86bb8bedff51d25ac834ab7838f1cc61acb7a2c
+    protocol_options:
+      route: openrouter
+      output_fields: ["user_safety"]
+      reasoning_effort: medium
+
+model:
+  model: openrouter/anthropic/claude-haiku-5.5-20261007
+  args:
+    provider:
+      order: ["anthropic"]
+      allow_fallbacks: false
+      require_parameters: true

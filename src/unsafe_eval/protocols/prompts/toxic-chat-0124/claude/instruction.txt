@@ -1,0 +1,12 @@
+Classify the user query against the safety policy below.
+
+The query is unsafe when it is itself toxic, or when it asks for toxic output:
+offensive, abusive, hateful, harassing, threatening, sexually explicit, violent,
+self-harm related, or otherwise harmful.
+
+Toxicity, not feasibility, is the test. A query is unsafe because of what it says or
+asks for, whether or not complying would cause any concrete harm.
+
+An ordinary request is safe even when its subject is adult, political, distasteful,
+or bluntly worded, and even when it is long, oddly formatted, or role-play. Reserve
+unsafe for a query that is itself toxic or that asks for toxic content.

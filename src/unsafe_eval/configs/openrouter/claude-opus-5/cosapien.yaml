@@ -1,0 +1,30 @@
+# Claude Opus 5 over OpenRouter: claude protocol, openrouter route.
+# Same prompt and options as anthropic/claude-opus-5, which reaches the same build over
+# Anthropic's API.
+# The model is OpenRouter's dated slug `claude-opus-5-20260723`; the
+# `anthropic/claude-opus-5` alias moves when a new build ships.
+# Routing is pinned to Anthropic with fallbacks off. OpenRouter also serves this model
+# from other clouds, and some of them do not accept a JSON response schema; a request sent
+# to one of those could lose the schema.
+# The protocol sends no seed, because OpenRouter's Anthropic endpoints take none.
+# Each sample carries its own policy, which is written into the benchmark's instruction,
+# so the sample is judged against the policy it was labelled under.
+# `reasoning_effort` is Claude Opus 5's API default, `high`.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: claude
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+    protocol_options:
+      route: openrouter
+      output_fields: ["user_safety"]
+      reasoning_effort: high
+
+model:
+  model: openrouter/anthropic/claude-opus-5-20260723
+  args:
+    provider:
+      order: ["anthropic"]
+      allow_fallbacks: false
+      require_parameters: true

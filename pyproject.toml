@@ -1,0 +1,136 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "unsafe-eval"
+version = "1.0.0"
+description = "Reproducible safety evaluations for open- and closed-weight language models using Inspect AI."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [
+  { name = "Simone Conia", email = "simone@principled-intelligence.com" },
+  { name = "Riccardo Orlando", email = "riccardo@principled-intelligence.com" },
+]
+dependencies = [
+  "anyio>=4.14,<5",
+  "click>=8.1,<9",
+  "datasets>=5.0.1,<6",
+  "fsspec>=2023.1",
+  "huggingface-hub>=0.25,<3",
+  "inspect-ai>=0.3.273,<0.4",
+  "pydantic>=2.13,<3",
+  "pyyaml>=6,<7",
+  "rich>=13,<16",
+]
+
+[project.optional-dependencies]
+# Without `gliner`: pip ignores the transformers override in [tool.uv], so the set would not resolve.
+all =["unsafe-eval[anthropic,clef,clm,google,hf,laya,openai,openrouter,orbitals,typesafe,vllm]"]
+anthropic = ["anthropic>=1.0,<2"]
+# Clef's loader builds its image and video processors even for text, and its model class needs
+# transformers 5. `kernels` serves the FP8 matmul for `quantization: fp8`.
+clef = ["unsafe-eval[hf]", "kernels>=0.17,<0.18", "torchvision", "transformers>=5.10"]
+# Exact: the package builds the text CLM's heads score, so upgrading it changes the protocol.
+clm = ["contrastive-lm==0.1.0", "unsafe-eval[vllm]"]
+# Exact: the package builds GLiNER2's input, so upgrading it changes the protocol.
+gliner = ["gliner2[local]==2.0.0"]
+google = ["google-genai>=1.69,<2"]
+hf = [
+  "accelerate>=1.0",
+  "torch>=2.4",
+  "transformers>=4.45",
+]
+# Exact: the package builds Laya's input sequence and routes it, so upgrading it changes the
+# protocol.
+laya = ["laya==0.3.22"]
+openai = ["openai>=3.1,<4"]
+openrouter = ["openai>=3.1,<4"]
+# Exact: the SDK builds ScopeGuard's prompt, so upgrading it changes the protocol.
+orbitals = [
+  "orbitals[scope-guard-vllm]==0.6.1; sys_platform == 'linux'",
+  "unsafe-eval[vllm]",
+]
+typesafe = ["typesafe-sdk>=0.7.1,<1"]
+vllm = [
+  # vLLM's suffix speculative decoding; vLLM names this exact version.
+  "arctic-inference==0.1.1; sys_platform == 'linux'",
+  "mistral-common>=1.11.5",
+  "vllm>=0.31,<0.32; sys_platform == 'linux'",
+]
+
+[project.urls]
+Homepage = "https://github.com/Principled-Intelligence/unsafe-eval"
+Documentation = "https://github.com/Principled-Intelligence/unsafe-eval/tree/main/docs"
+Issues = "https://github.com/Principled-Intelligence/unsafe-eval/issues"
+
+[project.scripts]
+unsafe-eval = "unsafe_eval.cli:cli"
+
+[project.entry-points.inspect_ai]
+unsafe_eval = "unsafe_eval._registry"
+
+[dependency-groups]
+dev = [
+  # The gemini protocol's tests check how Inspect's google provider sends a reasoning
+  # effort, which needs the SDK, so it is a development dependency as well as the
+  # `google` extra.
+  "google-genai>=1.69,<2",
+  "hatchling>=1.27",
+  "pre-commit>=4,<5",
+  "pytest>=9.0.3,<10",
+  "pytest-cov>=6,<8",
+  "ruff>=0.11,<0.17",
+  "ty==0.0.84",
+  # The TypeSafe provider annotates the SDK's response types and the tests build
+  # them, so the SDK is a development dependency as well as the `typesafe` extra.
+  "typesafe-sdk>=0.7.1,<1",
+]
+
+[tool.uv]
+# gliner2 2.0.0 caps transformers below 5, but GLiGuard's tokenizer needs 5 and GLiNER2.5-Decide
+# scores identically on both (docs/reproducibility.md). An override replaces every transformers
+# requirement, so this one keeps vllm's floor.
+override-dependencies = ["transformers>=5.5.3"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/unsafe_eval"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers --cov=unsafe_eval --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+
+[tool.ty.environment]
+python-version = "3.11"
+
+[tool.ty.analysis]
+# `laya`, `gliner2`, `orbitals` and `clm` come from optional extras that pull in torch, so none
+# is installed for development.
+allowed-unresolved-imports = [
+  "clm",
+  "clm.**",
+  "laya",
+  "laya.**",
+  "gliner2",
+  "gliner2.**",
+  "orbitals",
+  "orbitals.**",
+]
+
+[tool.ty.src]
+include = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "UP"]

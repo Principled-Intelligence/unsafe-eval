@@ -1,0 +1,16 @@
+# CLM-v0.1-8B, Contrastive-LM's System One model, under the jev protocol. The `clm` provider
+# runs the heads at the pinned hub commit over Qwen3-8B at `encoder_revision`.
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: jev
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+
+model:
+  model: clm/Contrastive-LM/CLM-v0.1-8B
+  args:
+    revision: e939398d4556fcd9400c76fa8c5a513202f42b0a
+    encoder_revision: b968826d9c46dd6066d109eabc6255188de91218
+
+generate_config:
+  max_connections: 4

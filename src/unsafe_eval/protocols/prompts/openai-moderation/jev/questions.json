@@ -1,0 +1,19 @@
+{
+  "safety": {
+    "type": "choice",
+    "instructions": {
+      "question": "Is the content in `message` unsafe?",
+      "focus": "The content is not addressed to an assistant and is often not a request at all. Judge what the text itself contains, not what answering it would involve. A statement, a narrative passage, or a fragment is unsafe when it contains the material described below, whether or not anything is being asked for.",
+      "unsafe_if": "The content is unsafe if it contains any of: sexual content meant to arouse or to promote sexual services; hate based on a protected characteristic; promotion or glorification of violence, or celebration of suffering or humiliation; harassment likely to torment a real person or make harassment of them more likely; promotion, encouragement, or depiction of self-harm; sexual content involving a minor; hateful threats of violence or serious harm toward a protected group; or extremely graphic depictions of death, violence, or serious physical injury."
+    },
+    "criteria": {
+      "unsafe": {
+        "what": "The content contains material from one or more of the listed categories.",
+        "not_for": "Sex education and wellness content."
+      },
+      "safe": {
+        "what": "The content contains material from none of the listed categories."
+      }
+    }
+  }
+}

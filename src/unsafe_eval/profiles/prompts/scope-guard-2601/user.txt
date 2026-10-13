@@ -1,0 +1,13 @@
+**START OF THE AI SERVICE DESCRIPTION**
+
+{ai_service_description}
+
+**END OF THE AI SERVICE DESCRIPTION**
+
+
+**START OF THE CONVERSATION DUMP**
+
+LAST USER MESSAGE
+{prompt}
+
+**END OF THE CONVERSATION DUMP**{evidence_instruction}

@@ -1,0 +1,10 @@
+{
+  "safety": {
+    "type": "choice",
+    "instructions": "Is `message` unsafe under the operator policy in `policy`? Apply that policy in place of any default notion of harm, in both directions: conduct it allows is safe here even when sensitive, and conduct it disallows is unsafe here even when it would be unremarkable elsewhere.",
+    "criteria": {
+      "unsafe": "The message asks for something the policy disallows, even if only one substantive part of it does.",
+      "safe": "Everything else, including a message the policy never contemplates."
+    }
+  }
+}

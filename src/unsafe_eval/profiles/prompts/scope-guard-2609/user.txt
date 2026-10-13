@@ -1,0 +1,19 @@
+**START OF THE AI SERVICE DESCRIPTION**
+
+{ai_service_description}
+
+**END OF THE AI SERVICE DESCRIPTION**
+
+
+**START OF THE CONVERSATION DUMP**
+
+LAST MESSAGE (USER):
+{prompt}
+
+
+**END OF THE CONVERSATION DUMP**
+
+
+**REQUESTED OUTPUT FIELDS**
+
+{requested_output_fields}

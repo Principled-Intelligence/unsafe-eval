@@ -1,0 +1,14 @@
+# Hooks run the ruff pinned in uv.lock, so commits and `uv run ruff` never disagree.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-imports
+        name: ruff (sort imports)
+        entry: uv run --frozen ruff check --select I --fix
+        language: system
+        types_or: [python, pyi]
+      - id: ruff-format
+        name: ruff (format)
+        entry: uv run --frozen ruff format
+        language: system
+        types_or: [python, pyi]

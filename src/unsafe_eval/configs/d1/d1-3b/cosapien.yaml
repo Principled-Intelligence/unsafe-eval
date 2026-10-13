@@ -1,0 +1,13 @@
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: d1
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+
+model:
+  model: d1/LiquidAI/d1-3B
+  args:
+    revision: da1fe36a861f24690f27f622dca1d8688503d113
+
+generate_config:
+  max_connections: 4

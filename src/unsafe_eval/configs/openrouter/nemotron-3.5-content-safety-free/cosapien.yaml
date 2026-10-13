@@ -1,0 +1,28 @@
+# Nemotron 3.5 Content Safety on OpenRouter's free endpoint, over a benchmark whose
+# policy varies per sample. The same protocol as configs/vllm/nemotron-3.5-content-safety,
+# on the `openrouter` route, over the same dataset revision.
+#
+# Read the scores with care. The vLLM tree hands the policy to the chat template's
+# `custom_policy` argument, which replaces the default taxonomy. OpenRouter discards
+# chat-template arguments, and the template drops a system message, so the only
+# channel left is the user turn. `inline_policy` writes the policy there: the model
+# reads it after the default taxonomy and from inside the conversation, so it answers
+# a different question than the vLLM tree asks, and the two sets of scores do not
+# belong in the same table.
+#
+# What this tree does measure honestly is cost and latency on a realistic prompt: the
+# policy is on the wire, so prompt size and timings reflect real work. They run high
+# rather than low, because the default taxonomy the vLLM prompt omits is still there.
+#
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: nemotron-3.5-content-safety
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+    protocol_options:
+      route: openrouter
+      request_categories: false
+      inline_policy: true
+
+model:
+  model: openrouter/nvidia/nemotron-3.5-content-safety-20260604:free

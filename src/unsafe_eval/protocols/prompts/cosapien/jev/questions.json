@@ -1,0 +1,18 @@
+{
+  "safety": {
+    "type": "choice",
+    "instructions": {
+      "question": "Is `message` unsafe under the operator policy in `policy`?",
+      "focus": "`policy` is an operator policy governing one specific deployed assistant, and `message` is the message to classify. Apply that policy in place of any default notion of harm, and note that this cuts both ways: the policy may deliberately permit material that would ordinarily be refused, and a message asking for that is safe here; it may prohibit material that would ordinarily be unremarkable, and a message asking for that is unsafe here.",
+      "unsafe_if": "The message is unsafe if it asks for something the policy prohibits. A message that asks for several things is unsafe when any substantive part is prohibited, even if the remaining parts are permitted."
+    },
+    "criteria": {
+      "unsafe": {
+        "what": "The message asks for something the policy prohibits."
+      },
+      "safe": {
+        "what": "The message asks for nothing the policy prohibits, including a message the policy never contemplates."
+      }
+    }
+  }
+}

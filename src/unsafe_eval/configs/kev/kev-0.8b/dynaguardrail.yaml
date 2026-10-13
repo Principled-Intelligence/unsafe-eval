@@ -1,0 +1,16 @@
+# Kev-0.8B, an open reconstruction of Jev, under the jev protocol. The `kev` provider
+# serves the pinned hub commit with Kev's code at `kev_revision`, its `kev-1.0` tag.
+task:
+  task: unsafe_eval/dynaguardrail_prompt_safety
+  args:
+    protocol: jev
+    dataset_revision: 3c21998805b692819e527f88702f761e33f6a013
+
+model:
+  model: kev/jaredpalmer/kev-0.8b
+  args:
+    revision: bf75a6a8848ea6960ff2ed108d9ed44c2941174f
+    kev_revision: 6b719c3c3f367295f6ef336f4f751cf5ff970abc
+
+generate_config:
+  max_connections: 4

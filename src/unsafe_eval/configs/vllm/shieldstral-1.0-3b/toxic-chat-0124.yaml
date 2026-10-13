@@ -1,0 +1,18 @@
+task:
+  task: unsafe_eval/toxic_chat_prompt_safety
+  args:
+    protocol: shieldstral-1.0-3b
+    dataset_revision: 29df8e4dba60e1f4af4b4075c0705c5b313548a8
+    protocol_options:
+      threshold: 0.5
+
+model:
+  model: vllm/mistralai/Shieldstral-1.0-3B
+  args:
+    revision: 003ec7e2b0bab5f0e6307edbaf186fa5822b76f5
+    dtype: bfloat16
+    max_model_len: 32768
+    max_num_batched_tokens: 32768
+
+generate_config:
+  max_connections: 4

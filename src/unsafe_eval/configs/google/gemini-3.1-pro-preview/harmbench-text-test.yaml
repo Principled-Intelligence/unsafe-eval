@@ -1,0 +1,33 @@
+# Gemini 3.1 Pro on Vertex AI through Google's SDK: gemini protocol, google route.
+# Same prompt and options as openrouter/gemini-3.1-pro-preview, which OpenRouter also sends to
+# Vertex AI. The two differ only in the seed, which Inspect's google provider never
+# sends.
+# The model code `gemini-3.1-pro-preview` names a preview model, which Google does not
+# document as one fixed build, so this configuration is a runnable example rather
+# than a reproducible run.
+# The project comes from GOOGLE_CLOUD_PROJECT. The region is `global`, where Vertex
+# serves all three configured models and where OpenRouter's Vertex endpoint runs;
+# override it with `-M location=<region>`.
+# Gemini's adjustable safety filters are set to `none`, Inspect's default, so the run
+# log records them. Filters Google does not let a caller adjust still apply.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/harmbench_prompt_safety
+  args:
+    protocol: gemini
+    dataset_revision: 8e1604d1171fe8a48d8febecd22f600e462bdcdd
+    protocol_options:
+      route: google
+      output_fields: ["user_safety"]
+      reasoning_effort: high
+
+model:
+  model: google/vertex/gemini-3.1-pro-preview
+  args:
+    location: global
+    safety_settings:
+      civic_integrity: none
+      dangerous_content: none
+      harassment: none
+      hate_speech: none
+      sexually_explicit: none

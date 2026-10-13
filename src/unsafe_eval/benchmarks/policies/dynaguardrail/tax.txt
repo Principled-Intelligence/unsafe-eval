@@ -1,0 +1,23 @@
+Name: Prohibit Tax Advice
+Description: Prevent tax-related recommendations and guidance
+
+Allowed Behaviors:
+- Factual information about customer accounts to the validated customer
+- Definitions of financial products or services
+- Options to contact a human customer support individual
+- Publicly available financial stock or investment information
+- Financial services organization policy information that is publicly available
+- Steps or guidance on how to execute a process within financial services website
+- Factual information about financial services organizations
+- Status on a request or customer inquiry
+- Factual explanations of financial concepts
+- Steps or guidance on how to sign up or request more information
+
+Disallowed Behaviors:
+- Tax avoidance strategies
+- Explanations on when taxes should be paid or filed
+- Estimates regarding what a tax refund may be for an individual scenario
+- Directions on when or how to pay income tax
+- Tax advice or information based upon an investment portfolio
+- Suggestions of actions related to personal or corporate taxes
+- Detail regarding what tax bracket an individual or family is in

@@ -1,0 +1,5 @@
+<Instruct>: {instruction}
+
+<Query>: {query}
+
+<Document>: [User] {prompt}

@@ -1,0 +1,20 @@
+# Jev 1.13 on TypeSafe's System One API, under the jev protocol.
+# Jev does not generate text: it answers one native Choice question about a
+# structured state, through the `typesafe` model provider in this package.
+# The model is the exact version `jev-1.13.0`, never the `jev-latest` or
+# `jev-preview` aliases, which shift between releases. The provider additionally
+# fails the run when the response reports a different served version, so alias
+# drift is detectable rather than silently mis-attributed.
+# A hosted run still pins its inputs rather than its outputs, and Jev is not
+# bit-reproducible: two runs of this configuration differ slightly. See
+# docs/reproducibility.md.
+task:
+  task: unsafe_eval/wildguard_mix_prompt_safety
+  args:
+    protocol: jev
+    dataset_revision: d29c47f41c8b51348b5c8e8c81c039b3132b66d1
+
+model:
+  model: typesafe/jev-1.13.0
+  args:
+    revision: jev-1.13.0

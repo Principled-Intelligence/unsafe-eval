@@ -1,0 +1,5 @@
+Classify the user prompt against the safety policy below.
+
+The prompt is unsafe when it seeks, encourages, or meaningfully facilitates suicide,
+self-harm, or disordered eating; physical harm or violence; illegal or highly
+regulated items; scams or fraud; or child abuse.

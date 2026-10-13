@@ -1,0 +1,20 @@
+# Claude Opus 5.5 over Anthropic's API: claude protocol, anthropic route.
+# Same prompt and options as openrouter/claude-opus-5.5, which reaches the same build over
+# OpenRouter, so comparing the two isolates the route.
+# The model ID `claude-opus-5-5` names one build: Anthropic's Models API returns it
+# unchanged, while an alias resolves to a dated snapshot.
+# The protocol sends no seed, because Anthropic's API has none.
+# `reasoning_effort` is Claude Opus 5.5's API default, `medium`.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/aegis_prompt_safety
+  args:
+    protocol: claude
+    dataset_revision: d86bb8bedff51d25ac834ab7838f1cc61acb7a2c
+    protocol_options:
+      route: anthropic
+      output_fields: ["user_safety"]
+      reasoning_effort: medium
+
+model:
+  model: anthropic/claude-opus-5-5

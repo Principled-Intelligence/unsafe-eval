@@ -1,0 +1,22 @@
+# GPT-6 Luna over OpenAI's API: gpt protocol, openai route.
+# Same prompt and options as openrouter/gpt-6-luna, which reaches this model over
+# OpenRouter, so comparing the two isolates the route.
+# The model is the `gpt-6-luna` alias, because OpenAI publishes no dated snapshot for
+# Luna. The build that answers is whatever the alias points to on the day, and the run
+# records a null model revision, so this configuration is a runnable example rather than a
+# reproducible run.
+# The protocol sends no seed on this route: Inspect sends GPT-5 and later models on
+# `openai/` to the Responses API, which ignores one.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/toxic_chat_prompt_safety
+  args:
+    protocol: gpt
+    dataset_revision: 29df8e4dba60e1f4af4b4075c0705c5b313548a8
+    protocol_options:
+      route: openai
+      output_fields: ["user_safety"]
+      reasoning_effort: medium
+
+model:
+  model: openai/gpt-6-luna

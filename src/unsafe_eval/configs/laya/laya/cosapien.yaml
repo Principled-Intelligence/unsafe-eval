@@ -1,0 +1,16 @@
+# Laya, under the laya protocol, run locally by this package's `laya` provider at the
+# pinned hub commit; Laya's Router picks the English or multilingual checkpoint per sample.
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: laya
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+
+model:
+  model: laya/convaiinnovations/laya
+  args:
+    revision: 1c5edc17a7acd8701df6fc341c0d179f1c62c982
+    max_len: 1024
+
+generate_config:
+  max_connections: 4

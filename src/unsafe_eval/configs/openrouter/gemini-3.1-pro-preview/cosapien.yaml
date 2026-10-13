@@ -1,0 +1,31 @@
+# Gemini 3.1 Pro over OpenRouter: gemini protocol, openrouter route.
+# Same prompt and options as google/gemini-3.1-pro-preview, which reaches the same build over
+# Vertex AI through Google's SDK.
+# The model is OpenRouter's dated slug `gemini-3.1-pro-preview-20260219`;
+# the `google/gemini-3.1-pro-preview` alias moves when a new build ships.
+# Routing is pinned to Vertex AI's global endpoint, the service and region the google
+# configurations call, with fallbacks off. OpenRouter also serves this model from
+# Google AI Studio, which blocks more of these prompts.
+# The protocol pins seed 0, which OpenRouter passes on to Google. Inspect's google
+# provider sends none, so the seed is the one parameter in which the two routes differ.
+# OpenRouter exposes no Gemini safety settings, so this configuration cannot set them.
+# Each sample carries its own policy, which is written into the benchmark's instruction,
+# so the sample is judged against the policy it was labelled under.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: gemini
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+    protocol_options:
+      route: openrouter
+      output_fields: ["user_safety"]
+      reasoning_effort: high
+
+model:
+  model: openrouter/google/gemini-3.1-pro-preview-20260219
+  args:
+    provider:
+      order: ["google-vertex/global"]
+      allow_fallbacks: false
+      require_parameters: true

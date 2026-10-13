@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>unsafe-eval results</title>
+<!--
+  Written by `unsafe-eval report --format html` and by `unsafe-eval run`. The data comes only
+  from metrics-*.json files, so no prompt or model output is in this page.
+  Fonts: Archivo and JetBrains Mono, latin subsets from fonts.gstatic.com, SIL Open Font License
+  1.1. To fetch newer ones, request fonts.googleapis.com/css2 for
+  family=Archivo:wght@400..800&family=JetBrains+Mono:wght@400;500 with a desktop browser's user
+  agent and download the files its latin blocks name. JetBrains Mono's two weights share one file.
+-->
+<style>
+/*@FONTS@*/
+/* The unsafe-eval leaderboard's look, itself taken from principled-intelligence.com: a dark-only
+   near-black ground lit by a violet and a mint glow, with mint for emphasis. */
+:root {
+  color-scheme: dark;
+  --bg: #09090d;
+  --text: #ffffff;
+  --body-text: rgba(255, 255, 255, 0.84);
+  --muted: rgba(255, 255, 255, 0.55);
+  --accent: #7df7d6;
+  --accent-soft: rgba(125, 247, 214, 0.12);
+  --violet: #6644ff;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --card: rgba(255, 255, 255, 0.03);
+  --raised: rgba(255, 255, 255, 0.05);
+  --hover: rgba(255, 255, 255, 0.04);
+  --popover: #141419;
+  /* Sticky cells must be opaque: --card over --bg, then --raised or --hover over that. */
+  --sticky: #101014;
+  --sticky-head: #1c1c20;
+  --sticky-hover: #1a1a1e;
+  --column: 8.5rem;
+  --font: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html {
+  color: var(--text); font: 14px/1.45 var(--font);
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(900px 500px at 12% -90px, rgba(102, 68, 255, 0.10), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(125, 247, 214, 0.07), transparent 55%),
+    var(--bg);
+}
+body { margin: 0; min-height: 100vh; }
+.wrap { width: min(1520px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 52px; }
+header { margin-bottom: 24px; padding-bottom: 28px; border-bottom: 1px solid var(--border); text-align: center; }
+header svg { display: block; width: 28px; height: auto; margin: 0 auto 22px; opacity: 0.92; }
+h1 { margin: 0; font-size: 40px; line-height: 1.15; font-weight: 600; letter-spacing: -0.04em; }
+h1 .accent { color: var(--accent); }
+h2 { margin: 0; font-size: 20px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
+h3 {
+  margin: 24px 0 10px 2px; font: 600 10px var(--mono); letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+}
+h4 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
+.muted { color: var(--muted); }
+.panel-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 14px; }
+.panel-heading h2 { margin-bottom: 4px; }
+#meta { margin: 0; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+#generated { font: 11px var(--mono); color: var(--muted); white-space: nowrap; }
+#meta [data-tip] { cursor: help; text-decoration: underline dotted; text-underline-offset: 3px; }
+#controls {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: end; padding: 12px; margin-bottom: 12px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+}
+.group { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.group + .group { margin-left: auto; }
+.control {
+  display: grid; gap: 4px; color: var(--muted); font: 10px var(--mono); letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.control.toggle {
+  display: flex; align-items: center; gap: 7px; margin: 24px 2px 10px; cursor: pointer;
+  color: var(--body-text); font: 12px var(--font); letter-spacing: 0; text-transform: none;
+}
+/* Every control is the same box; the dropdowns share one chevron. */
+select, .filter > summary, button.close {
+  height: 38px; display: inline-flex; align-items: center; background-color: var(--raised);
+  color: var(--text); border: 1px solid var(--border-strong); border-radius: 7px; padding: 0 12px;
+  font: 13px var(--font); letter-spacing: 0; text-transform: none; line-height: 1; cursor: pointer;
+  transition: border-color 0.15s;
+}
+select, .filter > summary {
+  appearance: none; min-width: 150px; padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%23ffffff' stroke-opacity='.55' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 12px;
+}
+select { max-width: 22rem; text-overflow: ellipsis; field-sizing: content; }
+select:hover, select:focus, .filter > summary:hover, .filter[open] > summary, button.close:hover {
+  border-color: var(--accent);
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.filter .count { margin-left: 8px; font: 12px var(--mono); color: var(--muted); }
+select option { background: var(--popover); }
+.filter { position: relative; }
+.filter > summary { list-style: none; }
+.filter > summary::-webkit-details-marker { display: none; }
+.menu {
+  position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; min-width: 280px;
+  max-width: 36rem; max-height: 340px; overflow: auto; background: var(--popover);
+  border: 1px solid var(--border-strong); border-radius: 7px; padding: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.menu label {
+  display: flex; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 5px;
+  cursor: pointer; font-size: 13px; color: var(--body-text); overflow-wrap: anywhere;
+}
+.menu label:hover { background: var(--hover); color: var(--text); }
+input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; }
+.scroll { overflow-x: auto; }
+#detail { padding: 18px 20px; }
+#detail .scroll { border: 1px solid var(--border); border-radius: 10px; }
+table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+th, td { padding: 0 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--border); }
+tbody tr:last-child td { border-bottom: 0; }
+th {
+  height: 42px; padding-block: 10px; background: var(--raised); font: 600 10px var(--mono);
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); vertical-align: bottom;
+}
+td { height: 50px; }
+/* Value columns share a minimum width and grow to fit their header on one line. */
+th:not(.row), td:not(.row) { min-width: var(--column); }
+th.row, td.row {
+  text-align: left; position: sticky; left: 0; z-index: 1; background: var(--sticky);
+  min-width: 15rem; max-width: 26rem; white-space: normal;
+}
+th.row { background: var(--sticky-head); }
+td.row { padding-block: 10px; }
+tbody tr:hover td { background-color: var(--hover); }
+tbody tr:hover td.row { background-color: var(--sticky-hover); }
+th button { all: unset; cursor: pointer; display: block; width: 100%; text-align: inherit; }
+th button:disabled { cursor: default; }
+th .bench { color: var(--body-text); }
+th .metric { display: block; margin-top: 3px; position: relative; font-weight: 400; }
+th.row button .metric { display: inline; }
+th button.metric:hover:not(:disabled), th[aria-sort] .metric { color: var(--text); }
+th .metric.fallback { font-style: italic; }
+/* In the cell's padding, so the arrow never wraps onto a line of its own. */
+th[aria-sort] .metric::after { position: absolute; right: -11px; }
+th.row[aria-sort] .metric::after { position: static; margin-left: 0.4em; }
+th[aria-sort="descending"] .metric::after { content: "↓"; }
+th[aria-sort="ascending"] .metric::after { content: "↑"; }
+.name { font-weight: 600; }
+.setup { display: block; margin-top: 3px; font: 10.5px/1.4 var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+td.num { font-family: var(--mono); }
+.bar { display: block; height: 4px; border-radius: 999px; background: var(--hover); overflow: hidden; }
+.bar > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--violet)); }
+/* As wide as the three-decimal value above it. */
+td .bar { width: 5ch; margin: 6px 0 0 auto; }
+td.best { color: var(--accent); font-weight: 600; }
+td.empty, td.incomplete { color: var(--muted); }
+td.incomplete { font-style: italic; }
+td.clickable { cursor: pointer; }
+.delta { display: inline-block; padding: 2px 7px; margin: -2px -7px; border-radius: 6px; }
+td.flag { outline: 1px dashed var(--muted); outline-offset: -4px; }
+td.flag::after { content: " ⚠"; color: var(--muted); font-size: 0.75rem; }
+.tag {
+  display: inline-flex; margin-left: 10px; padding: 3px 7px; border-radius: 6px; vertical-align: middle;
+  background: var(--accent-soft); color: var(--accent); font: 500 11px var(--font); white-space: nowrap;
+}
+.detail-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0 2px 16px; }
+.key { display: flex; gap: 6px; max-width: 26rem; font-size: 12px; color: var(--body-text); }
+.key > i { flex: none; width: 10px; height: 10px; margin-top: 4px; border-radius: 50%; }
+.groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: 20px 40px; }
+.bar-row { display: grid; grid-template-columns: minmax(4rem, 1fr) 9rem; gap: 12px; align-items: center; padding: 3px 0; font: 12px var(--mono); }
+.bar-row .value { font-variant-numeric: tabular-nums; }
+.bar-row .value .muted { margin-left: 8px; }
+#tooltip {
+  position: fixed; z-index: 10; max-width: 460px; padding: 8px 10px; background: var(--popover);
+  border: 1px solid var(--border-strong); border-radius: 7px; font: 11px/1.5 var(--mono);
+  color: var(--body-text); white-space: pre-wrap; pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  max-height: calc(100vh - 16px); overflow: hidden; overflow-wrap: anywhere;
+}
+footer { margin-top: 36px; font-size: 11px; color: var(--muted); text-align: center; }
+@media (max-width: 640px) {
+  .wrap { width: min(100% - 24px, 1520px); padding-top: 24px; }
+  h1 { font-size: 30px; }
+  .panel-heading { display: block; }
+  #generated { display: block; margin-top: 6px; }
+  .group + .group { margin-left: 0; }
+  select { max-width: 13rem; }
+  th.row, td.row { min-width: 10rem; max-width: 12rem; }
+  .groups { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><!--@MARK@--><h1>Unsafe-Eval <span class="accent">Results</span></h1></header>
+<div class="panel-heading">
+  <div><h2>Prompt-safety benchmarks</h2><p id="meta"></p></div>
+  <span id="generated"></span>
+</div>
+<section id="controls" aria-label="Filters and comparison"></section>
+<main>
+  <div class="card scroll"><table id="summary"></table></div>
+  <div class="card scroll"><table id="overview"></table></div>
+  <section id="detail" class="card" hidden></section>
+</main>
+<footer>Built from metrics-*.json files only, with no prompts or model outputs · unsafe-eval · Principled Intelligence</footer>
+</div>
+<div id="tooltip" role="tooltip" hidden></div>
+<script type="application/json" id="data">@DATA@</script>
+<script>
+"use strict";
+const DATA = JSON.parse(document.getElementById("data").textContent);
+const BETTER = new Set(DATA.higher_is_better);
+const LOWER = new Set(DATA.lower_is_better);
+const hasDirection = (name) => BETTER.has(name) || LOWER.has(name);
+const LATENCY = "latency_median_seconds";
+const SUMMARY = ["balanced_accuracy", "unsafe_f1", "unsafe_recall", "safe_recall", LATENCY];
+// The Metric picker's first option: the summary table in place of the per-benchmark overview.
+const SUMMARY_VIEW = "summary";
+const summarizing = () => state.metric === SUMMARY_VIEW;
+// Categorical colors for the group bars, one per row: brand mint and violet first, each hue
+// stepped into the dark lightness band and validated with the dataviz skill's validator.
+const SERIES = ["#1DAA8C", "#8F7BFF", "#B9892D", "#339BDC", "#D06E93", "#75A423"];
+// One-hue OKLCH ramps for deltas against a baseline, validated the same way: mint for better
+// and violet for worse. Each fades toward the background at its low end.
+const BETTER_RAMP = { L: [0.36, 0.8], C: [0.05, 0.121], h: 173.5 };
+const WORSE_RAMP = { L: [0.34, 0.64], C: [0.1, 0.2], h: 282.1 };
+// Cells at least this light (OKLCH L) get dark text.
+const DARK_TEXT_FROM = 0.58;
+// A delta this large or larger gets the full diverging color; smaller ones fade toward neutral.
+const DELTA_FULL = 0.2;
+// Deltas smaller than this are left unshaded.
+const DELTA_ZERO = 0.005;
+
+const state = {
+  sort: null,
+  baseline: null,
+  metric: null,
+  hidden: { rows: new Set(), protocols: new Set(), benchmarks: new Set() },
+  detail: null,
+  showOther: false,
+};
+
+// Every piece of data goes in as a text node or an attribute, never as markup.
+function h(tag, attributes = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attributes)) {
+    if (value === null || value === undefined || value === false) continue;
+    if (key === "tip") node.dataset.tip = value;
+    else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+    else node.setAttribute(key, value === true ? "" : String(value));
+  }
+  node.append(...children.filter((child) => child !== null && child !== undefined));
+  return node;
+}
+
+const headline = {};
+for (const record of DATA.records) {
+  if (record.metric_class !== "headline") continue;
+  ((headline[record.label] ??= {})[record.benchmark] ??= {})[record.name] = record.value;
+}
+const rowByLabel = new Map(DATA.rows.map((row) => [row.label, row]));
+const colorOf = (row) => SERIES[DATA.rows.indexOf(row) % SERIES.length];
+const pretty = (name) => name.replaceAll("_", " ").replace(/\bf1\b/g, "F1");
+// JSON drops the `.0` of a float, so metric values always get fixed decimals: three for rates
+// and seconds, one for token counts. Only the other scores, such as verdict counts, print whole
+// numbers as they are.
+const digits = (value) => (Math.abs(value) >= 100 ? 1 : 3);
+const fmt = (value) => value.toFixed(digits(value));
+const fmtOther = (value) => (Number.isInteger(value) ? String(value) : value.toFixed(3));
+const fmtDelta = (delta) => (delta > 0 ? "+" : delta < 0 ? "−" : "±") + Math.abs(delta).toFixed(digits(delta));
+// When a run finished, in UTC to the minute. Sidecars record their own offset, so convert first.
+function fmtTime(iso) {
+  const time = new Date(iso ?? NaN);
+  return Number.isNaN(time.getTime()) ? (iso ?? "–") : `${time.toISOString().slice(0, 16).replace("T", " ")} UTC`;
+}
+const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
+
+// The options that differ from another row of the same model, revision and protocol, which
+// are what the label's full options JSON is there to tell apart.
+function distinctOptions(row) {
+  const own = row.protocol_options ?? {};
+  const peers = DATA.rows.filter((r) => r !== row && r.model === row.model && r.revision === row.revision && r.protocol === row.protocol);
+  const keys = [...new Set([own, ...peers.map((r) => r.protocol_options ?? {})].flatMap(Object.keys))].sort();
+  const text = (v) => (typeof v === "string" ? v : v === undefined ? "unset" : JSON.stringify(v));
+  return keys.filter((k) => peers.some((r) => text(r.protocol_options?.[k]) !== text(own[k]))).map((k) => `${k}=${text(own[k])}`).join(" ");
+}
+// A label starts with the model and its revision, then adds whatever setup tells rows apart.
+// The model's last path segment leads; the rest follows on a quieter line, revision shortened
+// and options cut to those that differ. The setup tip has them all.
+function labelBlock(row) {
+  const cut = row.model.lastIndexOf("/");
+  let rest = row.label.slice(row.model.length);
+  if (row.revision) rest = rest.replace(`@${row.revision}`, `@${row.revision.slice(0, 7)}`);
+  rest = rest.replace(` ${row.options_text}`, ` ${distinctOptions(row)}`);
+  const setup = [row.model.slice(0, Math.max(cut, 0)), rest.trim()].filter(Boolean).join(" ");
+  return [h("span", { class: "name" }, row.model.slice(cut + 1)), setup ? h("span", { class: "setup" }, setup) : null];
+}
+
+function onRamp(ramp, share) {
+  const L = ramp.L[0] + (ramp.L[1] - ramp.L[0]) * share;
+  const C = ramp.C[0] + (ramp.C[1] - ramp.C[0]) * share;
+  return { background: `oklch(${L.toFixed(3)} ${C.toFixed(3)} ${ramp.h})`, dark: L >= DARK_TEXT_FROM };
+}
+// Lower-is-better metrics count seconds or tokens, so their deltas are relative to the baseline.
+function diverging(name, delta, base) {
+  if (LOWER.has(name) && !base) return null;
+  const change = LOWER.has(name) ? -delta / base : delta;
+  if (Math.abs(change) < DELTA_ZERO) return null;
+  return onRamp(change > 0 ? BETTER_RAMP : WORSE_RAMP, Math.min(Math.abs(change) / DELTA_FULL, 1));
+}
+function paint(node, color) {
+  if (!color) return;
+  node.style.background = color.background;
+  if (color.dark) node.style.color = "var(--bg)";
+}
+const bar = (value, color) =>
+  h("span", { class: "bar" }, h("i", { style: `width:${Math.max(0, Math.min(value, 1)) * 100}%${color ? `;background:${color}` : ""}` }));
+
+// The best value of a metric with a direction in one column, marked when there is no baseline.
+// Partial runs are left out, so a smoke test never looks like the leader, and a column with a
+// single value has no best.
+function bestOf(name, rows, get) {
+  if (state.baseline || !hasDirection(name)) return undefined;
+  const values = rows.filter((row) => !row.partial).map(get).filter((v) => typeof v === "number");
+  if (values.length < 2) return undefined;
+  return LOWER.has(name) ? Math.min(...values) : Math.max(...values);
+}
+
+// `compare` is null without a baseline (or on the baseline row), else { value } of the baseline.
+// `best` is the column's best value, if it has one.
+function shade(td, name, value, compare, best) {
+  if (typeof value !== "number") {
+    td.textContent = value === null ? "n/a" : "–";
+    td.classList.add("empty");
+    return;
+  }
+  if (!compare) {
+    td.textContent = fmt(value);
+    if (value === best) {
+      td.classList.add("best");
+      td.dataset.tip = `The best ${pretty(name)} among the complete runs shown.`;
+    }
+    return;
+  }
+  if (typeof compare.value !== "number") {
+    td.textContent = fmt(value);
+    td.dataset.tip = "The baseline has no value here, so there is no delta.";
+    return;
+  }
+  const delta = value - compare.value;
+  const pill = h("span", { class: "delta" }, fmtDelta(delta));
+  td.append(pill);
+  td.dataset.tip = `${fmt(value)}, against ${fmt(compare.value)} for the baseline`;
+  if (hasDirection(name)) paint(pill, diverging(name, delta, compare.value));
+}
+
+function flags(row, base, benchmark) {
+  const run = row.runs[benchmark];
+  const baseRun = base.runs[benchmark];
+  if (!run || !baseRun) return [];
+  const reasons = [];
+  if (run.dataset_revision !== baseRun.dataset_revision) {
+    reasons.push(
+      `dataset revision ${run.dataset_revision ?? "unknown"} differs from the baseline's ` +
+        `${baseRun.dataset_revision ?? "unknown"}`,
+    );
+  }
+  if (row.partial || base.partial) reasons.push("a partial run, limited with --limit or --sample-id");
+  return reasons;
+}
+function addFlags(td, reasons) {
+  const unique = [...new Set(reasons)];
+  if (!unique.length) return;
+  td.classList.add("flag");
+  td.dataset.tip = [td.dataset.tip, "Not comparable:", ...unique.map((r) => `· ${r}`)]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function setupTip(row) {
+  const lines = [
+    `model     ${row.model}`,
+    `revision  ${row.revision ?? "–"}`,
+    `protocol  ${row.protocol ?? "–"}`,
+    `options   ${JSON.stringify(row.protocol_options)}`,
+  ];
+  if (row.partial) lines.push("partial   yes, limited with --limit or --sample-id");
+  for (const [benchmark, run] of Object.entries(row.runs)) {
+    lines.push("", benchmark, `  date    ${fmtTime(run.completed_at)}`, `  dataset ${run.dataset_revision ?? "–"}`, `  run     ${run.run_id}`, `  eval    ${run.eval_id}`);
+  }
+  return lines.join("\n");
+}
+
+const visibleBenchmarks = () => DATA.benchmarks.filter((b) => !state.hidden.benchmarks.has(b.name));
+// With one benchmark shown, the overview has no Average and an Average sort falls to that
+// benchmark.
+function single() {
+  const benchmarks = visibleBenchmarks();
+  return benchmarks.length === 1 ? benchmarks[0] : null;
+}
+const sortKey = () => (state.sort.key === "average" && single() ? single().name : state.sort.key);
+// The unweighted mean of a metric over the shown benchmarks that report it. A row gets a mean
+// only with a value on every one of them.
+function averageOf(name) {
+  const benchmarks = visibleBenchmarks().filter((b) => b.headline_metrics.includes(name)).map((b) => b.name);
+  if (!benchmarks.length) return null;
+  const values = {};
+  const covered = {};
+  for (const row of DATA.rows) {
+    const found = benchmarks.map((b) => headline[row.label]?.[b]?.[name]).filter((v) => typeof v === "number");
+    covered[row.label] = found.length;
+    values[row.label] = found.length === benchmarks.length ? found.reduce((sum, v) => sum + v, 0) / found.length : null;
+  }
+  return { benchmarks, values, covered };
+}
+function visibleRows() {
+  return DATA.rows.filter(
+    (row) =>
+      row.label === state.baseline ||
+      (!state.hidden.rows.has(row.label) && !state.hidden.protocols.has(String(row.protocol))),
+  );
+}
+// The overview shows the chosen metric, or the primary one on a benchmark that lacks it.
+function shownMetric(benchmark) {
+  return benchmark.headline_metrics.includes(state.metric) ? state.metric : benchmark.primary_metric;
+}
+function shownValue(row, benchmark) {
+  const metric = shownMetric(benchmark);
+  if (!(benchmark.name in row.runs) || !metric) return undefined;
+  return headline[row.label]?.[benchmark.name]?.[metric] ?? null;
+}
+function sortValue(row) {
+  const key = sortKey();
+  if (key === "label") return row.label;
+  if (key === "average") return state.metric ? averageOf(state.metric)?.values[row.label] : undefined;
+  if (summarizing()) return averageOf(key)?.values[row.label];
+  return shownValue(row, DATA.benchmarks.find((b) => b.name === key));
+}
+function sortedRows() {
+  const rows = visibleRows();
+  const descending = state.sort.descending;
+  rows.sort((a, b) => {
+    const x = sortValue(a);
+    const y = sortValue(b);
+    if (state.sort.key === "label") return descending ? y.localeCompare(x) : x.localeCompare(y);
+    const xMissing = typeof x !== "number";
+    const yMissing = typeof y !== "number";
+    if (xMissing || yMissing) return xMissing - yMissing;
+    return descending ? y - x : x - y;
+  });
+  const base = state.baseline && rowByLabel.get(state.baseline);
+  if (base) rows.splice(0, 0, ...rows.splice(rows.indexOf(base), 1));
+  return rows;
+}
+// Best first: highest first unless lower is better.
+function sortsDown(key) {
+  if (key === "label") return false;
+  if (summarizing()) return !LOWER.has(key);
+  const metric = key === "average" ? state.metric : shownMetric(DATA.benchmarks.find((b) => b.name === key));
+  return !LOWER.has(metric);
+}
+function toggleSort(key) {
+  if (sortKey() === key) state.sort.descending = !state.sort.descending;
+  else state.sort = { key, descending: sortsDown(key) };
+  render();
+}
+
+function markSort(th, key) {
+  if (sortKey() === key) th.setAttribute("aria-sort", state.sort.descending ? "descending" : "ascending");
+  return th;
+}
+function rowLabelCell(row, isBase) {
+  const [name, setup] = labelBlock(row);
+  return h("td", { class: "row", tabindex: "0", tip: setupTip(row) }, name, isBase ? h("span", { class: "tag" }, "baseline") : null, setup);
+}
+
+function renderOverview() {
+  const table = document.getElementById("overview");
+  table.parentElement.hidden = summarizing();
+  if (summarizing()) return;
+  const benchmarks = visibleBenchmarks();
+  const base = state.baseline ? rowByLabel.get(state.baseline) : null;
+  const one = single();
+  const average = state.metric && !one ? averageOf(state.metric) : null;
+  const head = h("tr", {}, markSort(h("th", { class: "row", scope: "col" }, h("button", { type: "button", onclick: () => toggleSort("label") }, h("span", { class: "metric" }, "Model"))), "label"));
+  if (average) {
+    const tip =
+      `Unweighted mean of ${state.metric} over ${average.benchmarks.join(", ")}.\n` +
+      "Each benchmark counts once, whatever its size. A row missing any of them gets no average. " +
+      "Hiding a benchmark with the filter takes it out of the average.";
+    head.append(markSort(h("th", { scope: "col", tip }, h("button", { type: "button", onclick: () => toggleSort("average") }, h("span", { class: "bench" }, `Average of ${average.benchmarks.length}`), h("span", { class: "metric" }, pretty(state.metric)))), "average"));
+  }
+  for (const benchmark of benchmarks) {
+    const metric = shownMetric(benchmark);
+    const fallback = metric && state.metric && metric !== state.metric;
+    const tip = !metric
+      ? `No ${state.metric ?? "metric"} here, and not registered, so it has no primary metric`
+      : fallback
+        ? `No ${state.metric} on this benchmark, so it shows its primary metric, ${metric}, which the average leaves out. Sort by ${metric}`
+        : `Sort by ${metric}`;
+    head.append(markSort(h("th", { scope: "col" },
+      h("button", { type: "button", class: "bench", onclick: () => openDetail(benchmark.name), tip: "Open this benchmark's details" }, benchmark.name),
+      h("button", { type: "button", class: fallback ? "metric fallback" : "metric", disabled: !metric, onclick: () => toggleSort(benchmark.name), tip }, metric ? pretty(metric) : "no primary metric"),
+    ), benchmark.name));
+  }
+  const body = h("tbody");
+  const rows = sortedRows();
+  const bestAverage = average ? bestOf(state.metric, rows, (row) => average.values[row.label]) : undefined;
+  const best = new Map(benchmarks.map((b) => [b, bestOf(shownMetric(b), rows, (row) => shownValue(row, b))]));
+  for (const row of rows) {
+    const isBase = base === row;
+    const compareTo = base && !isBase ? base : null;
+    const tr = h("tr", {}, rowLabelCell(row, isBase));
+    if (average) tr.append(averageCell(row, average, state.metric, compareTo, bestAverage));
+    for (const benchmark of benchmarks) tr.append(benchmarkCell(row, benchmark, compareTo, best.get(benchmark)));
+    body.append(tr);
+  }
+  table.replaceChildren(h("thead", {}, head), body);
+}
+
+// The headline averages side by side, or one benchmark's own values when it is the only one shown.
+function renderSummary() {
+  const one = single();
+  const base = state.baseline ? rowByLabel.get(state.baseline) : null;
+  const table = document.getElementById("summary");
+  table.parentElement.hidden = !summarizing();
+  if (!summarizing()) return;
+  const columns = SUMMARY.map((name) => [name, averageOf(name)]).filter(([, average]) => average);
+  const head = h("tr", {}, h("th", { class: "row", scope: "col" }, one ? one.name : "Average", one ? null : h("span", { class: "metric" }, "over the benchmarks shown")));
+  for (const [name, average] of columns) {
+    const tip = one
+      ? `${name} on ${one.name}.`
+      : `Unweighted mean of ${name} over ${average.benchmarks.join(", ")}.\nA row missing any of them gets no average.`;
+    const note = one ? null : plural(average.benchmarks.length, "benchmark");
+    head.append(markSort(h("th", { scope: "col", tip }, h("button", { type: "button", onclick: () => toggleSort(name) }, h("span", { class: note ? "bench" : "bench metric" }, name === LATENCY ? "latency (s)" : pretty(name)), note ? h("span", { class: "metric" }, note) : null)), name));
+  }
+  const rows = sortedRows();
+  const body = h("tbody");
+  for (const row of rows) {
+    const isBase = base === row;
+    const tr = h("tr", {}, rowLabelCell(row, isBase));
+    for (const [name, average] of columns) {
+      tr.append(averageCell(row, average, name, base && !isBase ? base : null, bestOf(name, rows, (r) => average.values[r.label])));
+    }
+    body.append(tr);
+  }
+  table.replaceChildren(h("thead", {}, head), body);
+}
+
+function averageCell(row, average, name, base, best) {
+  const td = h("td", { class: "num average" });
+  const value = average.values[row.label];
+  if (typeof value !== "number") {
+    const missing = average.benchmarks.filter((b) => typeof headline[row.label]?.[b]?.[name] !== "number");
+    td.textContent = `${average.covered[row.label]}/${average.benchmarks.length}`;
+    td.classList.add("incomplete");
+    td.dataset.tip = `No average: no ${name} value on ${missing.join(", ")}.`;
+    return td;
+  }
+  shade(td, name, value, base ? { value: average.values[base.label] } : null, best);
+  if (base) addFlags(td, average.benchmarks.flatMap((b) => flags(row, base, b).map((r) => `${b}: ${r}`)));
+  else if (BETTER.has(name)) td.append(bar(value));
+  return td;
+}
+
+function benchmarkCell(row, benchmark, base, best) {
+  const td = h("td", { class: "num clickable", onclick: () => openDetail(benchmark.name) });
+  if (!(benchmark.name in row.runs)) {
+    td.textContent = "–";
+    td.classList.add("empty");
+    td.dataset.tip = "Not run on this benchmark.";
+    return td;
+  }
+  const metric = shownMetric(benchmark);
+  if (!metric) {
+    td.textContent = "·";
+    td.classList.add("empty");
+    td.dataset.tip = "Unregistered benchmark with no primary metric. Open its details for every metric.";
+    return td;
+  }
+  shade(td, metric, shownValue(row, benchmark), base ? { value: shownValue(base, benchmark) ?? undefined } : null, best);
+  if (base) addFlags(td, flags(row, base, benchmark.name));
+  return td;
+}
+
+function openDetail(name) {
+  state.detail = name;
+  render();
+  document.getElementById("detail").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function metricTable(rows, columns, get, base, benchmark, rated) {
+  const head = h("tr", {}, h("th", { class: "row", scope: "col" }, "Model"), ...columns.map((c) => h("th", { scope: "col" }, rated ? pretty(c) : c)));
+  const body = h("tbody");
+  const best = new Map(columns.map((c) => [c, rated ? bestOf(c, rows, (row) => get(row, c)) : undefined]));
+  for (const row of rows) {
+    const isBase = base === row;
+    const tr = h("tr", {}, rowLabelCell(row, isBase));
+    for (const column of columns) {
+      const td = h("td", { class: "num" });
+      const value = get(row, column);
+      if (rated) {
+        const compare = base && !isBase ? { value: get(base, column) } : null;
+        shade(td, column, value, compare, best.get(column));
+        if (compare) addFlags(td, flags(row, base, benchmark));
+      } else {
+        td.textContent = typeof value === "number" ? fmtOther(value) : value === null ? "n/a" : "–";
+      }
+      tr.append(td);
+    }
+    body.append(tr);
+  }
+  return h("div", { class: "scroll" }, h("table", {}, h("thead", {}, head), body));
+}
+
+// One bar per row in every group, in the same order and colors as the legend above them.
+function groupChart(values, rows, lookup, base) {
+  return h("div", { class: "groups" }, ...values.map((value) => h("div", {}, h("h4", {}, value), ...rows.map((row) => {
+    const v = lookup.get(`${row.label}\u0000${value}`);
+    const baseValue = base && base !== row ? lookup.get(`${base.label}\u0000${value}`) : undefined;
+    const text = typeof v === "number" ? fmt(v) : v === null ? "n/a" : "–";
+    const delta = typeof v === "number" && typeof baseValue === "number" ? h("span", { class: "muted" }, fmtDelta(v - baseValue)) : null;
+    return h("div", { class: "bar-row", tip: row.label }, typeof v === "number" ? bar(v, colorOf(row)) : h("span"), h("span", { class: "value" }, text, delta));
+  }))));
+}
+const legend = (rows) =>
+  h("div", { class: "legend" }, ...rows.map((row) => h("div", { class: "key", tip: row.label }, h("i", { style: `background:${colorOf(row)}` }), h("div", {}, ...labelBlock(row)))));
+
+function renderDetail() {
+  const panel = document.getElementById("detail");
+  const benchmark = DATA.benchmarks.find((b) => b.name === state.detail);
+  if (!benchmark || state.hidden.benchmarks.has(benchmark.name)) {
+    panel.hidden = true;
+    return;
+  }
+  panel.hidden = false;
+  const base = state.baseline ? rowByLabel.get(state.baseline) : null;
+  const rows = sortedRows().filter((row) => benchmark.name in row.runs);
+  const records = DATA.records.filter((r) => r.benchmark === benchmark.name && r.in_detail);
+  const tag = benchmark.primary_metric ? `primary · ${pretty(benchmark.primary_metric)}` : "not registered";
+  const content = [
+    h("div", { class: "detail-head" },
+      h("h2", {}, benchmark.name, h("span", { class: "tag" }, tag)),
+      h("button", { type: "button", class: "close", onclick: () => { state.detail = null; render(); } }, "Close")),
+  ];
+  const names = benchmark.headline_metrics.filter((name) => records.some((r) => r.metric_class === "headline" && r.name === name));
+  if (names.length) {
+    content.push(h("h3", {}, "Headline metrics"), metricTable(rows, names, (row, name) => headline[row.label]?.[benchmark.name]?.[name], base, benchmark.name, true));
+  }
+  const byKey = new Map();
+  for (const record of records) {
+    if (record.metric_class !== "grouped") continue;
+    if (!byKey.has(record.group_key)) byKey.set(record.group_key, []);
+    byKey.get(record.group_key).push(record);
+  }
+  for (const [key, list] of byKey) {
+    const values = [...new Set(list.map((r) => r.group_value))];
+    const lookup = new Map(list.map((r) => [`${r.label}\u0000${r.group_value}`, r.value]));
+    content.push(h("h3", {}, key ? `By ${pretty(key)}` : "Groups"));
+    if (key === byKey.keys().next().value) content.push(legend(rows));
+    content.push(groupChart(values, rows, lookup, base));
+  }
+  const others = records.filter((r) => r.metric_class === "other");
+  if (others.length) {
+    content.push(h("label", { class: "control toggle" },
+      h("input", { type: "checkbox", checked: state.showOther, onchange: (event) => { state.showOther = event.target.checked; render(); } }),
+      "Show other scores"));
+    if (state.showOther) {
+      const table = {};
+      for (const r of others) (table[r.label] ??= {})[`${r.score}.${r.name}`] = r.value;
+      const columns = [...new Set(others.map((r) => `${r.score}.${r.name}`))];
+      content.push(metricTable(rows, columns, (row, column) => table[row.label]?.[column], null, benchmark.name, false));
+    }
+  }
+  panel.replaceChildren(...content);
+}
+
+function filterMenu(title, names, hidden, display = (name) => name) {
+  const count = h("span", { class: "count" });
+  const summary = h("summary", {}, title, count);
+  const update = () => { count.textContent = `${names.length - hidden.size}/${names.length}`; };
+  const boxes = names.map((name) =>
+    h("label", {},
+      h("input", { type: "checkbox", checked: !hidden.has(name), onchange: (event) => {
+        if (event.target.checked) hidden.delete(name);
+        else hidden.add(name);
+        update();
+        render();
+      } }),
+      display(name)));
+  update();
+  return h("details", { class: "filter" }, summary, h("div", { class: "menu" }, ...boxes));
+}
+function choice(id, values, current, onChange, display) {
+  return h("select", { id, onchange: (event) => onChange(event.target.value) },
+    ...values.map((value) => h("option", { value, selected: value === current }, display(value))));
+}
+function renderControls() {
+  const labels = DATA.rows.map((row) => row.label);
+  const protocols = [...new Set(DATA.rows.map((row) => String(row.protocol)))];
+  const filters = h("div", { class: "group filters" },
+    filterMenu("Models", labels, state.hidden.rows),
+    filterMenu("Protocols", protocols, state.hidden.protocols, (p) => (p === "null" ? "(none)" : p)),
+    filterMenu("Benchmarks", DATA.benchmarks.map((b) => b.name), state.hidden.benchmarks));
+  const pickers = h("div", { class: "group" });
+  const metrics = [...new Set(DATA.benchmarks.flatMap((b) => b.headline_metrics))]
+    .filter(hasDirection)
+    .sort()
+    .sort((a, b) => LOWER.has(a) - LOWER.has(b));
+  if (metrics.length) {
+    pickers.append(h("label", { class: "control" }, "Metric",
+      choice("metric", hasSummary ? [SUMMARY_VIEW, ...metrics] : metrics, state.metric, (value) => {
+        const switched = (value === SUMMARY_VIEW) !== summarizing();
+        state.metric = value;
+        if (switched) state.sort = defaultSort();
+        else state.sort.descending = sortsDown(state.sort.key);
+        render();
+      }, (value) => (value === SUMMARY_VIEW ? "Summary" : pretty(value)))));
+  }
+  pickers.append(h("label", { class: "control" }, "Baseline",
+    choice("baseline", ["", ...labels], "", (value) => { state.baseline = value || null; render(); }, (v) => v || "none")));
+  document.getElementById("controls").replaceChildren(filters, pickers);
+}
+
+function renderHeader() {
+  const runs = DATA.rows.reduce((count, row) => count + Object.keys(row.runs).length, 0);
+  document.getElementById("generated").textContent = `generated ${DATA.generated_at.replace("T", " ").slice(0, 16)} UTC`;
+  const { duplicates, unsuccessful, partial, unreadable } = DATA.notes;
+  const counts = [];
+  const tip = [];
+  if (duplicates) {
+    counts.push(plural(duplicates, "repeat"));
+    tip.push(`${plural(duplicates, "older repeat")}: only the latest run of each setup is shown.`);
+  }
+  if (unsuccessful.length) {
+    counts.push(`${unsuccessful.length} unsuccessful`);
+    for (const run of unsuccessful) {
+      const outcome = run.has_success ? "a successful run of it is shown instead" : "no successful run of it is shown";
+      tip.push(`The ${run.status} run of ${run.model} on ${run.benchmark}, started ${fmtTime(run.created_at)}: ${outcome}. ${run.path}`);
+    }
+  }
+  if (partial) {
+    counts.push(`${partial} partial`);
+    tip.push(`${plural(partial, "partial run")}, limited with --limit or --sample-id. --include-partial shows them.`);
+  }
+  if (unreadable.length) {
+    counts.push(`${unreadable.length} unreadable`);
+    tip.push(...unreadable.map((path) => `Could not read ${path}`));
+  }
+  document.getElementById("meta").replaceChildren(
+    `${DATA.source} · ${plural(DATA.rows.length, "setup")} · ${plural(runs, "run")}`,
+    counts.length ? " · " : "",
+    counts.length ? h("span", { tip: tip.join("\n") }, `left out ${counts.join(", ")}`) : "",
+  );
+}
+
+const tooltip = document.getElementById("tooltip");
+// Below the cursor if the tip fits there, above it if it fits there, and otherwise as low as
+// the window allows. A setup tip lists every run, so it can be taller than either side.
+function place(x, y) {
+  const pad = 14;
+  const edge = 8;
+  const height = tooltip.offsetHeight;
+  let top = y + pad;
+  if (top + height > innerHeight - edge) {
+    top = y - pad - height >= edge ? y - pad - height : Math.max(edge, innerHeight - edge - height);
+  }
+  tooltip.style.left = `${Math.max(edge, Math.min(x + pad, innerWidth - tooltip.offsetWidth - edge))}px`;
+  tooltip.style.top = `${top}px`;
+}
+function showTip(target, x, y) {
+  tooltip.textContent = target.dataset.tip;
+  tooltip.hidden = false;
+  place(x, y);
+}
+document.addEventListener("mouseover", (event) => {
+  const target = event.target.closest("[data-tip]");
+  if (target) showTip(target, event.clientX, event.clientY);
+  else tooltip.hidden = true;
+});
+document.addEventListener("mousemove", (event) => { if (!tooltip.hidden) place(event.clientX, event.clientY); });
+document.addEventListener("focusin", (event) => {
+  const target = event.target.closest("[data-tip]");
+  if (!target) return;
+  const box = target.getBoundingClientRect();
+  showTip(target, box.left, box.bottom);
+});
+document.addEventListener("focusout", () => { tooltip.hidden = true; });
+document.addEventListener("click", (event) => {
+  for (const menu of document.querySelectorAll("details.filter[open]")) {
+    if (!menu.contains(event.target)) menu.open = false;
+  }
+});
+
+function render() {
+  renderSummary();
+  renderOverview();
+  renderDetail();
+}
+const directed = DATA.benchmarks.flatMap((b) => b.headline_metrics).filter(hasDirection);
+const hasSummary = SUMMARY.some((name) => directed.includes(name));
+function defaultSort() {
+  if (summarizing()) return { key: SUMMARY.find((name) => directed.includes(name)), descending: true };
+  if (state.metric) return { key: "average", descending: sortsDown("average") };
+  return { key: DATA.benchmarks.find((b) => b.primary_metric)?.name ?? "label", descending: true };
+}
+state.metric = hasSummary ? SUMMARY_VIEW : directed.includes("unsafe_f1") ? "unsafe_f1" : (directed.sort()[0] ?? null);
+state.sort = defaultSort();
+renderHeader();
+renderControls();
+render();
+</script>
+</body>
+</html>

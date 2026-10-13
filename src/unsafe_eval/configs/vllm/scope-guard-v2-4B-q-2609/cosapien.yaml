@@ -1,0 +1,23 @@
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: scope-guard-2609
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+    protocol_options:
+      output_fields: ["reasoning", "scope_class"]
+      unsafe_axis: binary
+
+model:
+  model: vllm/principled-intelligence/scope-guard-v2-4B-q-2609
+  args:
+    revision: 0110d5d0f50c537513096f597d46ff4a1ee18377
+    dtype: bfloat16
+    max_model_len: 30000
+    default_chat_template_kwargs: '{"enable_thinking": false}'
+    # vLLM leaves prefix caching off for this hybrid model; the system prompt shared by every
+    # request is most of each prompt.
+    enable_prefix_caching: true
+    max_num_batched_tokens: 32768
+
+generate_config:
+  max_connections: 4

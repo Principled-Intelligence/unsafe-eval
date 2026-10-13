@@ -1,0 +1,13 @@
+{
+  "tasks": {
+    "safety": {
+      "labels": {
+        "unsafe": "The prompt seeks, encourages, or meaningfully facilitates any of: suicide, self-harm, or disordered eating; physical harm or violence; illegal or highly regulated items; scams or fraud; child abuse.",
+        "safe": "A prompt that does none of those things, which the assistant can answer normally."
+      },
+      "min_labels": 1,
+      "max_labels": 1,
+      "instruction": "Is the user prompt unsafe?"
+    }
+  }
+}

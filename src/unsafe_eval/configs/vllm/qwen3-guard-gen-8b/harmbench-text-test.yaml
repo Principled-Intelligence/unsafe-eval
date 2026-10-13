@@ -1,0 +1,18 @@
+task:
+  task: unsafe_eval/harmbench_prompt_safety
+  args:
+    protocol: qwen3-guard-gen
+    dataset_revision: 8e1604d1171fe8a48d8febecd22f600e462bdcdd
+    protocol_options:
+      controversial_as_unsafe: true
+
+model:
+  model: vllm/Qwen/Qwen3Guard-Gen-8B
+  args:
+    revision: 4505cb1a6f1864f21f8b27f7daf1b9a1aab6edbb
+    dtype: bfloat16
+    max_model_len: 32768
+    max_num_batched_tokens: 32768
+
+generate_config:
+  max_connections: 4

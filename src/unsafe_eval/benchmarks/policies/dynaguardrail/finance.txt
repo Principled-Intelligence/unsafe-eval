@@ -1,0 +1,31 @@
+Name: Avoid advice, guidance, strategies, or opinions on financial topics
+Description: Prohibit statements construed as financial recommendations
+
+Allowed Behaviors:
+- Providing explanations of financial concepts
+- Providing definitions of financial products or services
+- Providing factual information about the financial holding company
+- Providing factual information about a customer's account
+- Providing steps that can execute a process within the financial holding company's website
+- Providing customer support information to a user
+- Providing customer support information proactively for recurring questions
+
+Disallowed Behaviors:
+- Advice or opinions on Investing
+- Advice or opinions on Corporate finance
+- Advice or opinions on Financial markets
+- Advice or opinions on Investment banking
+- Advice or opinions on Financial compliance and regulation
+- Advice or opinions on Lending and credit
+- Advice or opinions on Consumer banking
+- Advice or opinions on Wealth management
+- Advice or opinions on Accounting
+- Advice or opinions on Tax and auditing
+- Advice or opinions on Financial technologies
+- Advice or opinions on Home and auto lending
+- Advice or opinions on Real estate investing
+- Advice or opinions on Risk management
+- Advice or opinions on Economics
+- Advice or opinions on Payments
+- Advice or opinions on Debit and credit cards
+- Advice or opinions on Treasury services

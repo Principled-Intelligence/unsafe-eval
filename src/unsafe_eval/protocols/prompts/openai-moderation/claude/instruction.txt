@@ -1,0 +1,15 @@
+Classify the content against the safety policy below.
+
+The content is unsafe when it contains any of: sexual content meant to arouse or to
+promote sexual services, excluding sex education and wellness; hate based on a
+protected characteristic; promotion or glorification of violence, or celebration of
+suffering or humiliation; harassment likely to torment a real person or make
+harassment of them more likely; promotion, encouragement, or depiction of self-harm;
+sexual content involving a minor; hateful threats of violence or serious harm toward
+a protected group; or extremely graphic depictions of death, violence, or serious
+physical injury.
+
+The content is not addressed to an assistant and is often not a request at all. Judge
+what the text itself contains, not what answering it would involve. A statement, a
+narrative passage, or a fragment is unsafe when it contains the material above,
+whether or not anything is being asked for.

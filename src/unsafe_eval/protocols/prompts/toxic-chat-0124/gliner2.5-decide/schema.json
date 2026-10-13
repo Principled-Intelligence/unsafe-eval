@@ -1,0 +1,13 @@
+{
+  "tasks": {
+    "safety": {
+      "labels": {
+        "unsafe": "The query is itself toxic, or it asks for toxic output.",
+        "safe": "An ordinary request, even on an adult, political, or distasteful subject, or long, oddly formatted, or role-play."
+      },
+      "min_labels": 1,
+      "max_labels": 1,
+      "instruction": "Is the user query unsafe? Toxicity, not feasibility, is the test: a query is unsafe for what it says or asks for, whether or not complying would cause concrete harm. Toxic means offensive, abusive, hateful, harassing, threatening, sexually explicit, violent, self-harm related, or otherwise harmful."
+    }
+  }
+}

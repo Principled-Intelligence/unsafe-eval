@@ -1,0 +1,15 @@
+# GLiGuard 300M, under the gliguard protocol, run locally by this package's
+# `gliner2` provider at the pinned hub commit.
+task:
+  task: unsafe_eval/cosapien_prompt_safety
+  args:
+    protocol: gliguard
+    dataset_revision: 29bb85bd4f84319d825517519278c8f8959fa031
+
+model:
+  model: gliner2/fastino/gliguard-LLMGuardrails-300M
+  args:
+    revision: 0e9b87233990dd3ff657ef7a540ee2b62b07c7d6
+
+generate_config:
+  max_connections: 4

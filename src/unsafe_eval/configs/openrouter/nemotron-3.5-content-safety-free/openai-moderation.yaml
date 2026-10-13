@@ -1,0 +1,20 @@
+# Nemotron 3.5 Content Safety on OpenRouter's free endpoint. The same protocol as
+# configs/vllm/nemotron-3.5-content-safety, on the `openrouter` route, over the same
+# dataset revision.
+#
+# OpenRouter discards chat-template arguments, so the route cannot ask for
+# categories and `request_categories` has to be false. The vLLM tree asks for them
+# here, so the two prompts differ by that argument. Only the `User Safety` line is
+# scored, but compare against a vLLM run at `request_categories: false` for an
+# identical prompt.
+task:
+  task: unsafe_eval/openai_moderation_prompt_safety
+  args:
+    protocol: nemotron-3.5-content-safety
+    dataset_revision: f4ab51b5edd3bfbcb349a56324274235b674e0e4
+    protocol_options:
+      route: openrouter
+      request_categories: false
+
+model:
+  model: openrouter/nvidia/nemotron-3.5-content-safety-20260604:free

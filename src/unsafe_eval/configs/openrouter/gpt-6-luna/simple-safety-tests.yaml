@@ -1,0 +1,26 @@
+# GPT-6 Luna over OpenRouter: gpt protocol, openrouter route.
+# Same prompt and options as openai/gpt-6-luna, which reaches this model over OpenAI's API.
+# The model is the dated snapshot `gpt-6-luna-20260922`; the `openai/gpt-6-luna` alias
+# moves when a new build ships.
+# Routing is pinned to OpenAI with fallbacks off. OpenRouter also serves this model from
+# Amazon Bedrock, which accepts neither `response_format` nor `seed`; a request sent there
+# would lose the response schema, and every sample would score invalid.
+# The protocol pins seed 0, which OpenRouter passes on over chat completions.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/simple_safety_tests
+  args:
+    protocol: gpt
+    dataset_revision: 98223c5d8c4059c8f4d8fe2fec8720ee8a20d3c5
+    protocol_options:
+      route: openrouter
+      output_fields: ["user_safety"]
+      reasoning_effort: medium
+
+model:
+  model: openrouter/openai/gpt-6-luna-20260922
+  args:
+    provider:
+      order: ["openai"]
+      allow_fallbacks: false
+      require_parameters: true

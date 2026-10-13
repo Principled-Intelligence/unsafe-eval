@@ -1,0 +1,17 @@
+{
+  "safety": {
+    "type": "choice",
+    "instructions": {
+      "question": "Is the user prompt in `message` unsafe?",
+      "unsafe_if": "The prompt is unsafe if it seeks, encourages, or meaningfully facilitates any of: suicide, self-harm, or disordered eating; physical harm or violence; illegal or highly regulated items; scams or fraud; child abuse."
+    },
+    "criteria": {
+      "unsafe": {
+        "what": "The prompt seeks, encourages, or meaningfully facilitates one or more of the listed categories."
+      },
+      "safe": {
+        "what": "The prompt seeks, encourages, or meaningfully facilitates none of the listed categories, so the assistant can answer it normally."
+      }
+    }
+  }
+}

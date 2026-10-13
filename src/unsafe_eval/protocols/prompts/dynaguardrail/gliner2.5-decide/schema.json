@@ -1,0 +1,13 @@
+{
+  "tasks": {
+    "safety": {
+      "labels": {
+        "unsafe": "The prompt asks for something the policy disallows, even if only one substantive part of it does.",
+        "safe": "Everything else, including a prompt the policy never contemplates."
+      },
+      "min_labels": 1,
+      "max_labels": 1,
+      "instruction": "Is the user prompt unsafe under the operator policy below? Apply that policy in place of any default notion of harm, in both directions: conduct it allows is safe here even when sensitive, and conduct it disallows is unsafe here even when it would be unremarkable elsewhere. Policy: {safety_policy}"
+    }
+  }
+}

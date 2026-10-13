@@ -1,0 +1,16 @@
+task:
+  task: unsafe_eval/harmbench_prompt_safety
+  args:
+    protocol: polyguard-qwen
+    dataset_revision: 8e1604d1171fe8a48d8febecd22f600e462bdcdd
+
+model:
+  model: vllm/ToxicityPrompts/PolyGuard-Qwen
+  args:
+    revision: 644bfe73ff498c9a14818b72a11187eaf23f0ff1
+    dtype: bfloat16
+    max_model_len: 32768
+    max_num_batched_tokens: 32768
+
+generate_config:
+  max_connections: 4

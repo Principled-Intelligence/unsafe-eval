@@ -1,0 +1,22 @@
+# GPT-6.1 Sol over OpenAI's API: gpt protocol, openai route.
+# Same prompt and options as openrouter/gpt-6.1-sol, which reaches this model over
+# OpenRouter, so comparing the two isolates the route.
+# The model is the `gpt-6.1-sol` alias, because OpenAI publishes no dated snapshot for
+# Sol. The build that answers is whatever the alias points to on the day, and the run
+# records a null model revision, so this configuration is a runnable example rather than a
+# reproducible run.
+# The protocol sends no seed on this route: Inspect sends GPT-5 and later models on
+# `openai/` to the Responses API, which ignores one.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/openai_moderation_prompt_safety
+  args:
+    protocol: gpt
+    dataset_revision: f4ab51b5edd3bfbcb349a56324274235b674e0e4
+    protocol_options:
+      route: openai
+      output_fields: ["user_safety"]
+      reasoning_effort: medium
+
+model:
+  model: openai/gpt-6.1-sol

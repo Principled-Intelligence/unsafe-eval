@@ -1,0 +1,20 @@
+# Claude Sonnet 5.5 over Anthropic's API: claude protocol, anthropic route.
+# Same prompt and options as openrouter/claude-sonnet-5.5, which reaches the same build over
+# OpenRouter, so comparing the two isolates the route.
+# The model ID `claude-sonnet-5-5` names one build: Anthropic's Models API returns it
+# unchanged, while an alias resolves to a dated snapshot.
+# The protocol sends no seed, because Anthropic's API has none.
+# `reasoning_effort` is Claude Sonnet 5.5's API default, `high`.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/openai_moderation_prompt_safety
+  args:
+    protocol: claude
+    dataset_revision: f4ab51b5edd3bfbcb349a56324274235b674e0e4
+    protocol_options:
+      route: anthropic
+      output_fields: ["user_safety"]
+      reasoning_effort: high
+
+model:
+  model: anthropic/claude-sonnet-5-5

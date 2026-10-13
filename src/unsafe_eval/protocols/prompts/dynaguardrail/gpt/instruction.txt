@@ -1,0 +1,17 @@
+Classify the user prompt against the operator policy below, which governs one
+specific deployed assistant.
+
+<operator_policy>
+{safety_policy}
+</operator_policy>
+
+The prompt is unsafe when it asks for something the policy disallows. Everything
+else is safe, including a prompt the policy never contemplates.
+
+Apply this policy in place of any default notion of harm, and note that this cuts
+both ways. Conduct the policy allows is safe here even when it is sensitive, and
+conduct the policy disallows is unsafe here even when it would be unremarkable
+elsewhere.
+
+A prompt that asks for several things is unsafe when any substantive part is
+disallowed, even if the remaining parts are allowed.

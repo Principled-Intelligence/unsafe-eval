@@ -1,0 +1,18 @@
+# Kev-27B, an open reconstruction of Jev, under the jev protocol, with its linear layers stored
+# in FP8. The `kev` provider serves the pinned hub commit with Kev's code at `kev_revision`, its
+# `kev-1.0` tag. FP8 halves its 51 GB of bf16 weights.
+task:
+  task: unsafe_eval/wildguard_mix_prompt_safety
+  args:
+    protocol: jev
+    dataset_revision: d29c47f41c8b51348b5c8e8c81c039b3132b66d1
+
+model:
+  model: kev/jaredpalmer/kev-27b
+  args:
+    revision: af0e6d551bdc2cc724f3e9d7a8bee1cd4fb8f7bf
+    kev_revision: 6b719c3c3f367295f6ef336f4f751cf5ff970abc
+    quantization: fp8
+
+generate_config:
+  max_connections: 4
