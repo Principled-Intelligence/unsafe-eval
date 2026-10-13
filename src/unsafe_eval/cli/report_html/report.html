@@ -50,9 +50,13 @@ html {
 }
 body { margin: 0; min-height: 100vh; }
 .wrap { width: min(1520px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 52px; }
-header { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); text-align: center; }
-header svg { display: block; width: 28px; height: auto; margin: 0 auto 12px; opacity: 0.92; }
-h1 { margin: 0; font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -0.04em; }
+header {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 24px;
+  margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 16px; flex: 1 1 auto; }
+.brand svg { width: 34px; height: auto; flex: none; opacity: 0.92; }
+h1 { margin: 0 0 4px; font-size: 28px; line-height: 1.15; font-weight: 600; letter-spacing: -0.04em; }
 h1 .accent { color: var(--accent); }
 h2 { margin: 0; font-size: 20px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
 h3 {
@@ -61,7 +65,6 @@ h3 {
 }
 h4 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
 .muted { color: var(--muted); }
-.panel-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 14px; }
 #meta { margin: 0; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
 #generated { font: 11px var(--mono); color: var(--muted); white-space: nowrap; }
 #meta [data-tip] { cursor: help; text-decoration: underline dotted; text-underline-offset: 3px; }
@@ -181,9 +184,7 @@ td.flag::after { content: " ⚠"; color: var(--muted); font-size: 0.75rem; }
 footer { margin-top: 36px; font-size: 11px; color: var(--muted); text-align: center; }
 @media (max-width: 640px) {
   .wrap { width: min(100% - 24px, 1520px); padding-top: 24px; }
-  h1 { font-size: 26px; }
-  .panel-heading { display: block; }
-  #generated { display: block; margin-top: 6px; }
+  h1 { font-size: 24px; }
   .group + .group { margin-left: 0; }
   select { max-width: 13rem; }
   th.row, td.row { min-width: 10rem; max-width: 12rem; }
@@ -193,11 +194,10 @@ footer { margin-top: 36px; font-size: 11px; color: var(--muted); text-align: cen
 </head>
 <body>
 <div class="wrap">
-<header><!--@MARK@--><h1>Unsafe-Eval <span class="accent">Results</span></h1></header>
-<div class="panel-heading">
-  <p id="meta"></p>
+<header>
+  <div class="brand"><!--@MARK@--><div><h1>Unsafe-Eval <span class="accent">Results</span></h1><p id="meta"></p></div></div>
   <span id="generated"></span>
-</div>
+</header>
 <section id="controls" aria-label="Filters and comparison"></section>
 <main>
   <div class="card scroll"><table id="summary"></table></div>
