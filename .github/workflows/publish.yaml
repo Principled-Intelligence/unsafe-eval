@@ -1,0 +1,49 @@
+name: Publish to PyPI
+
+# Release tags come from the Release Flow create-release process.
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        # setup-uv publishes only exact version tags.
+        uses: astral-sh/setup-uv@v10.3.0
+
+      - name: Build the sdist and wheel
+        run: uv build
+
+      - name: Upload the distributions
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/unsafe-eval/
+    permissions:
+      # PyPI trusted publishing exchanges this token for a short-lived upload credential.
+      id-token: write
+
+    steps:
+      - name: Download the distributions
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
