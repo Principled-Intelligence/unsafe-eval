@@ -6,7 +6,7 @@
 <p align="center">
     <a href="https://pypi.org/project/unsafe-eval/"><img src="https://img.shields.io/pypi/v/unsafe-eval?color=green" alt="PyPI Version"></a>
     <a href="https://pypi.org/project/unsafe-eval/"><img src="https://img.shields.io/pypi/pyversions/unsafe-eval" alt="Python Versions"></a>
-    <a href="https://raw.githubusercontent.com/Principled-Intelligence/unsafe-eval/refs/heads/main/LICENSE"><img src="https://img.shields.io/github/license/principled-intelligence/unsafe-eval" alt="GitHub License"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="License: Apache 2.0"></a>
 </p>
 
 <p align="center">
