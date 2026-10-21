@@ -21,6 +21,12 @@ OpenRouter returns Vertex AI's `SAFETY` block as `finish_reason: "error"` with
 empty completion, so the block reason is read from the raw response on the transcript's
 model event. `generate_or_refusal` handles all three shapes for every hosted family.
 
+A gateway relays upstream outages the same way, as a failed choice with an `error` and no
+block reason, such as OpenRouter's 502 "Network connection lost" when the upstream drops
+mid-answer. Inspect retries that error only when it arrives at the top of the response,
+so `generate_or_refusal` generates again itself and fails the sample if the choice keeps
+failing. Scored, the empty completion would count as the model's invalid output.
+
 Recognition is deliberately narrow. An error counts as a refusal only when it carries
 a known content-policy signature at a status that signature is served with: 403 for
 the gateway signatures, 400 or 403 for OpenAI's `invalid_prompt` and `bio_policy` codes.
@@ -50,8 +56,8 @@ UNKNOWN_STOP = "unknown"
 GATEWAY_ERROR_FINISH = "error"
 
 # Gemini's native finish reasons for a blocked response: the ones Inspect's google
-# provider reports as a `content_filter` stop. Only these make a relayed error a refusal,
-# so an upstream failure of any other kind stays an invalid output.
+# provider reports as a `content_filter` stop. Only these make a relayed error a refusal;
+# any other relayed error is an upstream failure.
 NATIVE_BLOCK_FINISH_REASONS = frozenset(
     {"SAFETY", "RECITATION", "BLOCKLIST", "PROHIBITED_CONTENT", "SPII"}
 )
@@ -69,6 +75,9 @@ PROVIDER_REFUSAL_STATUS = "403"
 # parameter arrive, so admitting every signature there would score ordinary request
 # errors as refusals.
 OPENAI_REFUSAL_CODES: tuple[str, ...] = ("invalid_prompt", "bio_policy")
+
+# Generations of a sample whose choice the gateway marked failed, before the sample fails.
+RELAYED_FAILURE_ATTEMPTS = 3
 OPENAI_REFUSAL_STATUSES: tuple[str, ...] = ("400", PROVIDER_REFUSAL_STATUS)
 
 # Substrings identifying a provider's input-side content refusal, matched
@@ -113,24 +122,41 @@ def content_filter_reason(output: ModelOutput) -> str:
     return "; ".join(parts)
 
 
-def relayed_block_reason(response: Mapping[str, Any] | None) -> str | None:
-    """Return a refusal description when a raw response relays an upstream block.
-
-    Returns `None` unless the first choice has `finish_reason: "error"` and a
-    `native_finish_reason` from `NATIVE_BLOCK_FINISH_REASONS`.
-    """
+def _failed_choice(response: Mapping[str, Any] | None) -> Mapping[str, Any] | None:
+    """Return a raw response's first choice if the gateway marked it `finish_reason: "error"`."""
     if not response:
         return None
     choices = response.get("choices")
     if not isinstance(choices, list) or not choices or not isinstance(choices[0], Mapping):
         return None
     choice = choices[0]
-    native = choice.get("native_finish_reason")
-    if choice.get("finish_reason") != GATEWAY_ERROR_FINISH:
+    return choice if choice.get("finish_reason") == GATEWAY_ERROR_FINISH else None
+
+
+def relayed_block_reason(response: Mapping[str, Any] | None) -> str | None:
+    """Return a refusal description when a raw response relays an upstream block.
+
+    Returns `None` unless the first choice has `finish_reason: "error"` and a
+    `native_finish_reason` from `NATIVE_BLOCK_FINISH_REASONS`.
+    """
+    choice = _failed_choice(response)
+    if choice is None:
         return None
+    native = choice.get("native_finish_reason")
     if native not in NATIVE_BLOCK_FINISH_REASONS:
         return None
     return f"finish_reason={GATEWAY_ERROR_FINISH}; native_finish_reason={native}"
+
+
+def relayed_failure_reason(response: Mapping[str, Any] | None) -> str | None:
+    """Return the gateway's error when a raw response relays an upstream failure.
+
+    Returns `None` unless the first choice has `finish_reason: "error"` and is not a block.
+    """
+    choice = _failed_choice(response)
+    if choice is None or choice.get("native_finish_reason") in NATIVE_BLOCK_FINISH_REASONS:
+        return None
+    return f"finish_reason={GATEWAY_ERROR_FINISH}; error={choice.get('error')}"
 
 
 def last_model_call_response() -> Mapping[str, Any] | None:
@@ -148,21 +174,35 @@ async def generate_or_refusal(state: TaskState, generate: Generate) -> TaskState
     single refused prompt discards an entire benchmark run. Only a recognised
     content refusal is absorbed: every other error is re-raised so that it still
     aborts the sample, and every other stop reason, `max_tokens` included, is left
-    for the scorer, which keeps a truncated object invalid.
+    for the scorer, which keeps a truncated object invalid. A choice the gateway
+    relays as an upstream failure is generated again, up to `RELAYED_FAILURE_ATTEMPTS`
+    times, and then fails the sample.
     """
-    try:
-        state = await generate(state, tool_calls="none")
-    except Exception as error:  # noqa: BLE001 - re-raised unless it is a refusal
-        reason = provider_refusal_reason(error)
-        if reason is None:
-            raise
-        state.metadata[PROVIDER_REFUSAL_METADATA_KEY] = reason
-        state.completed = True
-        return state
-    if state.output.stop_reason == CONTENT_FILTER_STOP:
-        state.metadata[PROVIDER_REFUSAL_METADATA_KEY] = content_filter_reason(state.output)
-    elif state.output.stop_reason == UNKNOWN_STOP:
-        reason = relayed_block_reason(last_model_call_response())
-        if reason is not None:
+    failure = None
+    for _ in range(RELAYED_FAILURE_ATTEMPTS):
+        try:
+            state = await generate(state, tool_calls="none")
+        except Exception as error:  # noqa: BLE001 - re-raised unless it is a refusal
+            reason = provider_refusal_reason(error)
+            if reason is None:
+                raise
             state.metadata[PROVIDER_REFUSAL_METADATA_KEY] = reason
-    return state
+            state.completed = True
+            return state
+        if state.output.stop_reason == CONTENT_FILTER_STOP:
+            state.metadata[PROVIDER_REFUSAL_METADATA_KEY] = content_filter_reason(state.output)
+            return state
+        if state.output.stop_reason != UNKNOWN_STOP:
+            return state
+        response = last_model_call_response()
+        if (reason := relayed_block_reason(response)) is not None:
+            state.metadata[PROVIDER_REFUSAL_METADATA_KEY] = reason
+            return state
+        if (failure := relayed_failure_reason(response)) is None:
+            return state
+        # Without the failed reply, the next attempt sends the same conversation.
+        if state.messages and state.messages[-1] is state.output.message:
+            state.messages.pop()
+    raise RuntimeError(
+        f"The gateway relayed an upstream failure on {RELAYED_FAILURE_ATTEMPTS} attempts: {failure}"
+    )

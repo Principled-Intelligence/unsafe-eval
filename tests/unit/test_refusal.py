@@ -5,11 +5,14 @@ from inspect_ai.model import ModelOutput, StopReason
 from inspect_ai.model._model_output import StopDetails
 from inspect_ai.solver import TaskState
 
+from unsafe_eval import _refusal
 from unsafe_eval._refusal import (
     PROVIDER_REFUSAL_METADATA_KEY,
+    RELAYED_FAILURE_ATTEMPTS,
     generate_or_refusal,
     provider_refusal_reason,
     relayed_block_reason,
+    relayed_failure_reason,
 )
 
 
@@ -134,7 +137,7 @@ def test_a_block_relayed_as_a_failed_choice_is_a_refusal() -> None:
     [
         None,
         {"choices": []},
-        # An upstream failure that is not a block stays an invalid output.
+        # An upstream failure that is not a block.
         {"choices": [{"finish_reason": "error", "native_finish_reason": "OTHER"}]},
         # A block reason on a choice that did not fail is not this shape.
         {"choices": [{"finish_reason": "stop", "native_finish_reason": "SAFETY"}]},
@@ -142,3 +145,68 @@ def test_a_block_relayed_as_a_failed_choice_is_a_refusal() -> None:
 )
 def test_anything_else_is_not_a_relayed_block(response: dict[str, object] | None) -> None:
     assert relayed_block_reason(response) is None
+
+
+# What OpenRouter returned when Fireworks dropped the connection mid-answer.
+RELAYED_FAILURE = {
+    "choices": [
+        {
+            "finish_reason": "error",
+            "native_finish_reason": None,
+            "error": {"code": 502, "message": "Network connection lost."},
+        }
+    ]
+}
+
+
+def test_a_relayed_upstream_failure_is_not_a_block() -> None:
+    assert relayed_block_reason(RELAYED_FAILURE) is None
+    assert relayed_failure_reason(RELAYED_FAILURE) == (
+        "finish_reason=error; error={'code': 502, 'message': 'Network connection lost.'}"
+    )
+    blocked = {"choices": [{"finish_reason": "error", "native_finish_reason": "SAFETY"}]}
+    assert relayed_failure_reason(blocked) is None
+
+
+def _relaying(monkeypatch: pytest.MonkeyPatch, failures: int) -> tuple[list[int], object]:
+    """A generate that fails upstream `failures` times, then answers."""
+    calls: list[int] = []
+    responses = [RELAYED_FAILURE] * failures + [{"choices": [{"finish_reason": "stop"}]}]
+    monkeypatch.setattr(_refusal, "last_model_call_response", lambda: responses[len(calls) - 1])
+
+    async def generate(state: TaskState, **kwargs: object) -> TaskState:
+        calls.append(len(state.messages))
+        failed = len(calls) <= failures
+        state.output = ModelOutput.from_content(
+            model="mockllm/model",
+            content="" if failed else '{"user_safety": "safe"}',
+            stop_reason="unknown" if failed else "stop",
+        )
+        state.messages.append(state.output.message)
+        return state
+
+    return calls, generate
+
+
+def test_a_relayed_upstream_failure_is_generated_again_on_the_same_conversation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls, generate = _relaying(monkeypatch, failures=RELAYED_FAILURE_ATTEMPTS - 1)
+
+    state = asyncio.run(generate_or_refusal(_state(), generate))
+
+    assert calls == [0] * RELAYED_FAILURE_ATTEMPTS
+    assert state.output.completion == '{"user_safety": "safe"}'
+    assert len(state.messages) == 1
+    assert PROVIDER_REFUSAL_METADATA_KEY not in state.metadata
+
+
+def test_a_choice_that_keeps_failing_upstream_fails_the_sample(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Scored, the empty completion would count as the model's invalid output.
+    calls, generate = _relaying(monkeypatch, failures=RELAYED_FAILURE_ATTEMPTS)
+
+    with pytest.raises(RuntimeError, match="Network connection lost"):
+        asyncio.run(generate_or_refusal(_state(), generate))
+    assert len(calls) == RELAYED_FAILURE_ATTEMPTS
