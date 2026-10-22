@@ -1782,7 +1782,7 @@ requests = [
 
 [[package]]
 name = "google-genai"
-version = "1.75.0"
+version = "2.29.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -1796,9 +1796,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9d/59/3ed61240ef20b3ae6ed54e82c6f8b6d1f194947bc6679679dd6cdb037594/google_genai-1.75.0.tar.gz", hash = "sha256:56bac3991b311c93f980c0a2abcd287b672146905df1fbd71c92ed633d5a07cf", size = 539039, upload-time = "2026-05-04T22:48:54.857Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/21/2b/977616ef350e51d3d263eb43be23a91be793544cd937b51c0fac313be233/google_genai-2.29.0.tar.gz", hash = "sha256:124d3eef9ff6b9e4ea548f95ff5b7721683e7990c0a936b006d9e2ab61ea897d", size = 706902, upload-time = "2026-10-07T22:22:57.153Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2d/b6/552d40e96da22921eb1fead7c14b00b5b5473a20e45959488660fab35ee2/google_genai-1.75.0-py3-none-any.whl", hash = "sha256:8dc4c096e7d6288c3087f6893f582fe52468932464781edb8193bd92b9fefb2c", size = 793726, upload-time = "2026-05-04T22:48:53.033Z" },
+    { url = "https://files.pythonhosted.org/packages/b8/27/a3dede4a1deb21f7fde6a171daa039bf0ea149a5e7826a785e8f109a6e13/google_genai-2.29.0-py3-none-any.whl", hash = "sha256:7adda55cb6746fb46d38ad3202c3372840b96eede964b5fb3df1469cd4998570", size = 1167603, upload-time = "2026-10-07T22:22:55.215Z" },
 ]
 
 [[package]]
@@ -7143,8 +7143,8 @@ requires-dist = [
     { name = "datasets", specifier = ">=5.0.1,<6" },
     { name = "fsspec", specifier = ">=2023.1" },
     { name = "gliner2", extras = ["local"], marker = "extra == 'gliner'", specifier = "==2.0.0" },
-    { name = "google-genai", marker = "extra == 'all'", specifier = ">=1.69,<2" },
-    { name = "google-genai", marker = "extra == 'google'", specifier = ">=1.69,<2" },
+    { name = "google-genai", marker = "extra == 'all'", specifier = ">=2.29.0,<3" },
+    { name = "google-genai", marker = "extra == 'google'", specifier = ">=2.29.0,<3" },
     { name = "huggingface-hub", specifier = ">=0.25,<3" },
     { name = "inspect-ai", specifier = ">=0.3.273,<0.4" },
     { name = "kernels", marker = "extra == 'all'", specifier = ">=0.17,<0.18" },
@@ -7184,7 +7184,7 @@ provides-extras = ["all", "anthropic", "clef", "clm", "gliner", "google", "hf", 
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "google-genai", specifier = ">=1.69,<2" },
+    { name = "google-genai", specifier = ">=2.29.0,<3" },
     { name = "hatch-vcs" },
     { name = "hatchling", specifier = ">=1.27" },
     { name = "pre-commit", specifier = ">=4,<5" },
