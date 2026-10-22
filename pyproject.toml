@@ -28,7 +28,7 @@ dependencies = [
 [project.optional-dependencies]
 # Without `gliner`: pip ignores the transformers override in [tool.uv], so the set would not resolve.
 all =["unsafe-eval[anthropic,clef,clm,google,hf,laya,openai,openrouter,orbitals,typesafe,vllm]"]
-anthropic = ["anthropic>=1.0,<2"]
+anthropic = ["anthropic>=1.13.0,<2"]
 # Clef's loader builds its image and video processors even for text, and its model class needs
 # transformers 5. `kernels` serves the FP8 matmul for `quantization: fp8`.
 clef = ["unsafe-eval[hf]", "kernels>=0.17,<0.18", "torchvision", "transformers>=5.10"]
@@ -45,14 +45,14 @@ hf = [
 # Exact: the package builds Laya's input sequence and routes it, so upgrading it changes the
 # protocol.
 laya = ["laya==0.3.22"]
-openai = ["openai>=3.1,<4"]
-openrouter = ["openai>=3.1,<4"]
+openai = ["openai>=3.28.0,<4"]
+openrouter = ["openai>=3.28.0,<4"]
 # Exact: the SDK builds ScopeGuard's prompt, so upgrading it changes the protocol.
 orbitals = [
   "orbitals[scope-guard-vllm]==0.6.1; sys_platform == 'linux'",
   "unsafe-eval[vllm]",
 ]
-typesafe = ["typesafe-sdk>=0.7.1,<1"]
+typesafe = ["typesafe-sdk>=0.7.4,<1"]
 vllm = [
   # vLLM's suffix speculative decoding; vLLM names this exact version.
   "arctic-inference==0.1.1; sys_platform == 'linux'",
@@ -86,7 +86,7 @@ dev = [
   "ty==0.0.84",
   # The TypeSafe provider annotates the SDK's response types and the tests build
   # them, so the SDK is a development dependency as well as the `typesafe` extra.
-  "typesafe-sdk>=0.7.1,<1",
+  "typesafe-sdk>=0.7.4,<1",
 ]
 
 [tool.uv]
