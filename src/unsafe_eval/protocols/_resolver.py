@@ -27,7 +27,15 @@ def register_protocol(
     *,
     components: tuple[InspectComponent, ...] = (),
 ) -> None:
-    """Register a model protocol builder and its public Inspect components."""
+    """Register a builder under a unique, non-empty protocol identifier.
+
+    The builder receives a benchmark identifier, its `BenchmarkProtocolSpec`, and the
+    supplied options, and returns a `SafetyProtocol`. `components` lists the public
+    Inspect solvers and scorers exposed through this package's entry-point registry.
+    Component function names must be unique across all registered protocols.
+
+    Raise `ValueError` for an empty or duplicate protocol name or a reused component name.
+    """
     if not name:
         raise ValueError("Protocol name must not be empty")
     if name in _PROTOCOL_BUILDERS:
@@ -53,7 +61,11 @@ def registered_protocol_components() -> tuple[InspectComponent, ...]:
 
 
 def load_protocol_extensions() -> None:
-    """Load installed ``unsafe_eval.protocols`` registration entry points."""
+    """Call each installed entry point in the `unsafe_eval.protocols` group.
+
+    Each entry point must load a zero-argument registration callable. Raise `TypeError`
+    for a non-callable entry point; loading and registration errors propagate unchanged.
+    """
     for entry_point in entry_points(group="unsafe_eval.protocols"):
         extension = entry_point.load()
         if not callable(extension):
@@ -67,7 +79,12 @@ def resolve_protocol(
     benchmark: BenchmarkName,
     options: dict[str, object] | None = None,
 ) -> SafetyProtocol:
-    """Build and validate one versioned benchmark-to-model protocol."""
+    """Build the registered protocol for a benchmark using its evaluation semantics.
+
+    `options=None` lets the builder apply its defaults; some protocols still require
+    options such as `route`. The builder validates options and benchmark compatibility.
+    Unknown benchmark or protocol identifiers raise `ValueError`.
+    """
     spec = benchmark_protocol_spec(benchmark)
     try:
         builder = _PROTOCOL_BUILDERS[protocol]

@@ -38,7 +38,13 @@ def parse_qwen3_guard_completion(
     *,
     controversial_as_unsafe: bool = True,
 ) -> Qwen3GuardSafetyResult:
-    """Extract exactly one native safety label and optional categories."""
+    """Parse one `Safety: safe|unsafe|controversial` line and optional categories.
+
+    Match labels without regard to case. Missing, malformed, or repeated safety lines
+    return an invalid result. `controversial_as_unsafe` maps controversial to unsafe by
+    default, or to safe when false. Categories come from one comma-separated
+    `Categories:` line; missing or repeated category lines give an empty list.
+    """
     label = native_label(completion, _SAFETY_LINE_PATTERN, _SAFETY_PATTERN)
     if label is None:
         return Qwen3GuardSafetyResult(Verdict.INVALID, None, [], "invalid")

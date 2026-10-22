@@ -19,7 +19,13 @@ _PROMPT_HARM_TO_TARGET = {"harmful": "yes", "unharmful": "no"}
 
 
 def record_to_samples(record: Mapping[str, Any]) -> list[Sample]:
-    """Convert a WildGuardTest row to zero or one prompt-only Inspect samples."""
+    """Convert an agreed prompt-harm label to one sample, omitting rows without a label.
+
+    A null label requires null agreement and returns an empty list. A labeled row must
+    have agreement from two or three annotators. Map `harmful` to target `yes` (unsafe)
+    and `unharmful` to `no` (safe); ignore response text and response labels.
+    Malformed fields or inconsistent label/agreement values raise `ValueError`.
+    """
     required = (
         "prompt",
         "adversarial",

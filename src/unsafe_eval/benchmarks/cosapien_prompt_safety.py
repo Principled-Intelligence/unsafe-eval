@@ -37,7 +37,12 @@ _TYPE_TO_TARGET = {
 
 
 def record_to_sample(record: Mapping[str, Any]) -> Sample:
-    """Convert a CoSApien row to a policy-conditioned binary safety sample."""
+    """Convert a CoSApien prompt using its scenario text as the sample's safety policy.
+
+    Store the scenario text in `safety_policy` metadata for the protocol to render.
+    Types `safe` and `allowed` map to target `no`; `disallowed` and `partial` map to
+    `yes`, so a request with any disallowed part counts as unsafe.
+    """
     required = ("prompt", "scenario", "type")
     require_fields(record, required, benchmark="CoSApien")
 

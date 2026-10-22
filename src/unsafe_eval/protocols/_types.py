@@ -12,7 +12,13 @@ ProtocolName = str
 
 @dataclass(frozen=True)
 class SafetyProtocol:
-    """Inspect components required for one benchmark and model protocol pairing."""
+    """Resolved Inspect components and metadata for one benchmark/protocol pairing.
+
+    `setup` prepares sample messages, `solver` runs the model, and `scorer` interprets its
+    output. `config` holds generation settings; `metrics` maps score keys to aggregate
+    metrics. `metadata` records protocol options and resource hashes for the task log.
+    A missing `solver` selects the default generator in `build_prompt_safety_task`.
+    """
 
     setup: Solver | None
     scorer: Scorer

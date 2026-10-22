@@ -19,7 +19,13 @@ _LABEL_TO_TARGET = {"unsafe": "yes", "safe": "no"}
 
 
 def record_to_samples(record: Mapping[str, Any]) -> list[Sample]:
-    """Convert an Aegis row to zero or one prompt-only Inspect samples."""
+    """Convert one human-labeled Aegis prompt to a sample, or omit a redacted prompt.
+
+    Return an empty list when `prompt` is exactly `REDACTED`; otherwise return one sample.
+    Map `unsafe` to target `yes` and `safe` to `no`. Response text and response labels
+    are excluded. Missing fields, unsupported labels, and non-human label sources raise
+    `ValueError`, including on rows whose prompt is redacted.
+    """
     required = (
         "id",
         "reconstruction_id_if_redacted",
@@ -56,7 +62,10 @@ def record_to_samples(record: Mapping[str, Any]) -> list[Sample]:
 
 
 def load_aegis_prompt_safety(dataset_revision: str = AEGIS_REVISION) -> Dataset:
-    """Load observable prompts from the pinned Aegis 2.0 test split."""
+    """Load the Aegis 2.0 test split, excluding prompts marked `REDACTED`.
+
+    `dataset_revision` selects the source revision and defaults to the pinned commit.
+    """
     return hf_dataset(
         path=AEGIS_REPOSITORY,
         name=AEGIS_CONFIG,

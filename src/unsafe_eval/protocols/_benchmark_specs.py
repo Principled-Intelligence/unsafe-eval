@@ -25,7 +25,17 @@ class BenchmarkMetricBuilder(Protocol):
 
 @dataclass(frozen=True)
 class BenchmarkProtocolSpec:
-    """Protocol-facing evaluation semantics for one benchmark."""
+    """Benchmark rules used to choose protocol adaptations and aggregate metrics.
+
+    `mixed_labels` distinguishes safe/unsafe datasets from unsafe-only datasets.
+    `metric_group_by` names the sample metadata field for grouped balanced accuracy;
+    `unsafe_group_by` names the fields for grouped unsafe recall on unsafe-only datasets.
+    `policy_conditioned` means each sample supplies its own safety policy.
+
+    The default metric builder requires `unsafe_f1` as the primary metric for mixed-label
+    datasets and `unsafe_recall` for unsafe-only datasets. A custom `metric_builder`
+    replaces that builder and may use a different primary metric.
+    """
 
     mixed_labels: bool = True
     primary_metric: str = "unsafe_f1"
@@ -61,7 +71,11 @@ def register_benchmark(
     name: BenchmarkName,
     spec: BenchmarkProtocolSpec,
 ) -> None:
-    """Register protocol-facing semantics for a benchmark identifier."""
+    """Register benchmark semantics under a unique, non-empty identifier.
+
+    This registers the rules used by protocol builders; export the benchmark's Inspect
+    task separately. Empty or already registered identifiers raise `ValueError`.
+    """
     if not name:
         raise ValueError("Benchmark name must not be empty")
     if name in _BENCHMARK_PROTOCOL_SPECS:
@@ -88,7 +102,16 @@ def build_protocol_metrics(
     probability: bool = False,
     scope_classes: list[str] | None = None,
 ) -> dict[str, list[Metric]]:
-    """Build metrics from the canonical semantics for one benchmark."""
+    """Return aggregate metrics keyed by the per-sample score fields they consume.
+
+    Use `spec.metric_builder` when supplied. Otherwise, select unsafe F1 and balanced
+    accuracy for mixed-label datasets, or unsafe recall for unsafe-only datasets, with
+    the metadata groupings declared by `spec`. An inconsistent primary metric raises
+    `ValueError`.
+
+    `probability` adds unsafe-probability summaries to the default unsafe-only metrics.
+    `scope_classes` adds a mean indicator for each named ScopeGuard class.
+    """
     if spec.metric_builder is not None:
         return spec.metric_builder(
             probability=probability,

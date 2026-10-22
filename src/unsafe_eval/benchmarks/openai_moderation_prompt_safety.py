@@ -20,7 +20,12 @@ OPENAI_MODERATION_CATEGORIES = ("S", "H", "V", "HR", "SH", "S3", "H2", "V2")
 
 
 def record_to_samples(record: Mapping[str, Any]) -> list[Sample]:
-    """Convert an OpenAI Moderation row to zero or one binary Inspect samples."""
+    """Convert category labels to one binary sample, or omit an ambiguous row.
+
+    Any known positive category gives target `yes` (unsafe). All eight categories must
+    be known and negative to give `no` (safe). Otherwise return an empty list. Missing
+    or null categories are unknown; present labels must be integer 0 or 1.
+    """
     require_fields(record, ("prompt",), benchmark="OpenAI Moderation")
 
     prompt = require_string(record, "prompt", benchmark="OpenAI Moderation", non_empty=True)
@@ -53,7 +58,11 @@ def record_to_samples(record: Mapping[str, Any]) -> list[Sample]:
 def load_openai_moderation_prompt_safety(
     dataset_revision: str = OPENAI_MODERATION_REVISION,
 ) -> Dataset:
-    """Load binary-determinate rows from the pinned OpenAI Moderation test set."""
+    """Load OpenAI Moderation rows whose category labels determine a binary target.
+
+    Retain rows with any positive category or with all eight categories negative.
+    `dataset_revision` selects the source revision and defaults to the pinned commit.
+    """
     return hf_dataset(
         path="json",
         split="train",

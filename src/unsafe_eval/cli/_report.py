@@ -91,11 +91,12 @@ Setup = tuple[str, str | None, str | None, str, str | None, bool, int | None]
 
 
 def setup(sidecar: Sidecar) -> Setup:
-    """What a run measured apart from its benchmark: model, protocol, options, dataset
-    revision, coverage, and concurrency.
+    """Return the fields used to identify repeated runs of the same benchmark.
 
-    Two runs of one benchmark with the same setup are repeats, and the report keeps only the
-    later one. Runs that differ in any of these get separate rows.
+    The tuple contains the model name and revision, protocol, serialized protocol options,
+    dataset revision, partial-run flag, and maximum connections. The report keeps the
+    latest successful run for each benchmark and tuple. A difference in any field
+    distinguishes the runs, even when the model name is the same.
     """
     return (
         sidecar.model,
