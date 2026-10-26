@@ -37,7 +37,12 @@ _LABEL_TO_TARGET = {"unsafe": "yes", "safe": "no"}
 
 
 def record_to_sample(record: Mapping[str, Any]) -> Sample:
-    """Convert one DynaGuardrail row to a policy-conditioned Inspect sample."""
+    """Convert a DynaGuardrail prompt and attach its domain's packaged safety policy.
+
+    `dataset_type` selects the policy and is recorded as `policy_domain` metadata.
+    The source `label` determines the target: `unsafe` becomes `yes`, `safe` becomes
+    `no`. Detailed and AI-predicted labels are validated but do not determine the target.
+    """
     required = (
         "prompt",
         "label",

@@ -19,7 +19,11 @@ _TOXICITY_TO_TARGET = {0: "no", 1: "yes"}
 
 
 def record_to_sample(record: Mapping[str, Any]) -> Sample:
-    """Convert a ToxicChat row to a prompt-only Inspect sample."""
+    """Use `user_input` as the prompt and map toxicity 1 to `yes`, 0 to `no`.
+
+    Retain annotation and jailbreak flags in metadata. This adapter accepts rows without
+    human annotation; `load_toxic_chat_prompt_safety` filters those rows out.
+    """
     required = (
         "conv_id",
         "user_input",

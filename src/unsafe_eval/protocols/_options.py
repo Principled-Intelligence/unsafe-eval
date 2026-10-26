@@ -17,7 +17,11 @@ def protocol_options(
     supplied: dict[str, object] | None,
     allowed: Set[str],
 ) -> dict[str, object]:
-    """Return supplied options after rejecting keys owned by other protocols."""
+    """Return options after rejecting keys outside `allowed`.
+
+    `None` means no options. The shared `validate_prompt_resource_hashes` key is always
+    accepted. This helper checks names only; callers must validate each option's value.
+    """
     values = supplied or {}
     unexpected = sorted(set(values) - allowed - {VALIDATE_PROMPT_RESOURCE_HASHES})
     if unexpected:
@@ -53,7 +57,10 @@ def validate_prompt_resource_hashes_option(values: dict[str, object]) -> bool:
 
 
 def threshold_option(values: dict[str, object]) -> float:
-    """Resolve a probability threshold in the inclusive unit interval."""
+    """Read `threshold`, defaulting to 0.5, as a float between 0 and 1 inclusive.
+
+    Raise `ValueError` for booleans, non-numeric values, or values outside that range.
+    """
     value = values.get("threshold", 0.5)
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError("Protocol option 'threshold' must be a number")

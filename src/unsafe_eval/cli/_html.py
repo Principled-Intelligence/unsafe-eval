@@ -77,24 +77,23 @@ def build_payload(
     metrics: Sequence[str] = (),
     source: str,
 ) -> dict[str, Any]:
-    """Collect the page's rows, benchmarks, and every metric value.
+    """Build the data consumed by the HTML report's script.
 
-    The page's script reads these keys:
+    The returned mapping contains:
 
-    - `rows`: one per row label, with its model, revision, protocol, protocol options and
-      their text as a label writes it, whether it is partial, and `runs`, which gives the
-      dataset revision, run and eval IDs, and completion time of its run of each benchmark.
-    - `benchmarks`: each benchmark's name, its primary metric (`None` when unregistered), and
-      its headline metrics, the primary one first.
-    - `records`: one per metric value, with the group key and value of a grouped metric.
-    - `notes`: counts of what was left out, with each unsuccessful run's model, benchmark,
-      status, start time, path, and whether a successful run of its setup is reported.
-    - `source`, `generated_at`, `higher_is_better` and `lower_is_better` for the header and
-      colors.
+    - `rows`: model rows with revision, protocol, options, display labels, and partial-run
+      status. Each row's `runs` maps benchmarks to dataset revision, run ID, evaluation ID,
+      and completion time.
+    - `benchmarks`: benchmark names, primary metrics (`None` for unregistered benchmarks),
+      and headline metrics with the primary metric first.
+    - `records`: metric values, including group keys and values for grouped metrics.
+    - `notes`: counts of omitted runs and details of unsuccessful runs, including whether
+      a successful run of the same benchmark and setup is included.
+    - `source` and `generated_at`: header text and generation time.
+    - `higher_is_better` and `lower_is_better`: metric names used to choose cell colors.
 
-    `metrics` limits only the detail tables, as it does for Markdown. Every record stays in
-    the payload and says whether it passed the filter, so the overview keeps its primary
-    metrics.
+    `metrics` filters the detail tables only. All metric records remain in the payload
+    with a flag indicating whether they match, so overview metrics remain available.
     """
     records = metric_records(selection)
 

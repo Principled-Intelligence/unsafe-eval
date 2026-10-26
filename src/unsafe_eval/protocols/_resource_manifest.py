@@ -13,7 +13,16 @@ PromptResourcePairing = tuple[BenchmarkName, ProtocolName]
 
 @dataclass(frozen=True)
 class PromptResource:
-    """One packaged prompt resource and its reproducibility requirements."""
+    """A packaged prompt file with an expected SHA-256 digest.
+
+    `filename` identifies the resource within a benchmark/protocol pairing. `package`
+    names its importable package, and `path` optionally gives package-relative path
+    components. Without `path`, loading uses
+    `protocols/prompts/<benchmark>/<protocol>/<filename>`.
+
+    `sha256` hashes the loaded UTF-8 text after removing one trailing newline.
+    `allow_empty` permits an empty resource; it does not permit a missing file.
+    """
 
     filename: str
     sha256: str
@@ -163,7 +172,12 @@ def register_prompt_resources(
     protocol: ProtocolName,
     resources: PromptResources,
 ) -> None:
-    """Register the immutable prompt resources for one supported pairing."""
+    """Declare prompt files and expected hashes for a benchmark/protocol pairing.
+
+    Raise `ValueError` for empty identifiers, a duplicate pairing, an empty resource
+    list, duplicate or empty filenames, or invalid digests, package names, or paths.
+    Files are read and checked later by `adaptation_resource`.
+    """
     pairing = benchmark, protocol
     if not benchmark or not protocol:
         raise ValueError("Prompt resource benchmark and protocol names must not be empty")
@@ -196,7 +210,10 @@ def prompt_resources(
     benchmark: BenchmarkName,
     protocol: ProtocolName,
 ) -> PromptResources:
-    """Return declared prompt resources for one pairing."""
+    """Return resource declarations for a benchmark/protocol pairing without reading files.
+
+    Raise `ValueError` if the pairing has no registered resources.
+    """
     try:
         return _PROMPT_RESOURCE_MANIFEST[(benchmark, protocol)]
     except KeyError as error:
@@ -212,7 +229,15 @@ def adaptation_resource(
     *,
     validate_hash: bool = True,
 ) -> tuple[str, dict[str, str]]:
-    """Load and validate one declared adaptation resource."""
+    """Return adaptation text and its actual hash for task provenance.
+
+    The hash mapping has one key, `protocol/<filename>`. The text is loaded from the
+    declared package path with one trailing newline removed.
+
+    Raise `ValueError` for an undeclared pairing or filename, disallowed empty content,
+    or a hash mismatch. With `validate_hash=False`, a mismatch warns and returns the
+    actual hash. Missing files still raise `FileNotFoundError`.
+    """
     resources = prompt_resources(benchmark, protocol)
     resource = next(
         (resource for resource in resources if resource.filename == filename),

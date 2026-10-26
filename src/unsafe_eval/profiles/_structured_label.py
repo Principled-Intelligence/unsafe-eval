@@ -55,11 +55,11 @@ class StructuredLabelFormat:
         return tuple(self.field_definitions)
 
     def normalize_selection(self, fields: object) -> tuple[str, ...]:
-        """Canonicalise a requested-field selection.
+        """Return unique requested fields in this format's declared field order.
 
-        The label field is forced in rather than trusted to be present, and
-        selections differing only in order normalise to the same tuple, so
-        equivalent requests render a byte-identical schema.
+        Accept a list, tuple, set, or frozenset of field names. Always include the label
+        field, even when it was not requested. Raise `ValueError` for an unsupported
+        container or unknown field. Equivalent selections produce the same tuple.
         """
         if isinstance(fields, str) or not isinstance(fields, (list, tuple, set, frozenset)):
             raise ValueError(
@@ -75,7 +75,11 @@ class StructuredLabelFormat:
         return tuple(field for field in self.canonical_order if field in requested)
 
     def response_model_for(self, selection: tuple[str, ...]) -> type[BaseModel]:
-        """Build the response model that emits exactly `selection`, in canonical order."""
+        """Build a strict Pydantic response model with exactly the selected fields.
+
+        Pass a selection from `normalize_selection` to retain canonical field order.
+        The model rejects extra fields and type coercion when validating completions.
+        """
         fields: dict[str, Any] = {field: self.field_definitions[field] for field in selection}
         model: type[BaseModel] = create_model(
             self.model_name,
@@ -98,7 +102,11 @@ def apply_policy_prompt(
     user_template: str,
     instruction: str,
 ) -> TaskState:
-    """Rewrite the user turn around `instruction` and prepend the system message."""
+    """Render the user prompt with an instruction and prepend a system message in place.
+
+    `user_template` must contain exactly the named fields `instruction` and `prompt`.
+    The latter receives the current user prompt text. Return the modified task state.
+    """
     state.user_prompt.text = render_template(
         user_template, instruction=instruction, prompt=state.user_prompt.text
     )
@@ -109,10 +117,12 @@ def apply_policy_prompt(
 def sample_policy_instruction(
     state: TaskState, instruction_template: str, *, policy_field: str, family: str
 ) -> str:
-    """Render a per-sample policy into a policy-conditioned instruction template.
+    """Fill the instruction template with the policy in `state.metadata[policy_field]`.
 
-    The policy is substituted as a value, never as part of a format string, so
-    braces inside a real policy stay literal.
+    The template must use exactly the named field `safety_policy`. Braces in the policy
+    remain literal because the policy is substituted as a value. Raise `ValueError` for
+    a missing or empty policy, a non-string policy, or mismatched template fields.
+    `family` identifies the model family in policy-validation errors.
     """
     policy = state.metadata.get(policy_field)
     if not isinstance(policy, str) or not policy:

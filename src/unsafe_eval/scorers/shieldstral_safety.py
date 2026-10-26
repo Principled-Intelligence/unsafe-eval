@@ -32,7 +32,11 @@ class ShieldstralSafetyResult:
 
 
 def parse_completion(completion: str) -> Verdict:
-    """Parse an exact yes/no completion with harmless surrounding punctuation."""
+    """Parse a standalone `yes` (unsafe) or `no` (safe), ignoring case.
+
+    Allow whitespace and quotes before the label, and whitespace, quotes, periods,
+    exclamation marks, or question marks after it. Any other text returns `INVALID`.
+    """
     match = _VERDICT_PATTERN.fullmatch(completion)
     return Verdict(match.group(1).lower()) if match is not None else Verdict.INVALID
 
@@ -56,7 +60,16 @@ def extract_shieldstral_result(
     *,
     threshold: float = 0.5,
 ) -> ShieldstralSafetyResult:
-    """Extract a verdict, preferring normalized first-token class logprobs."""
+    """Prefer first-token class log probabilities, falling back to completion parsing.
+
+    When either class is present among the first token's alternatives, use the highest
+    log probability for each recognized class and substitute -10.0 for a missing class.
+    Normalize over those two values and predict unsafe only when its probability is
+    strictly greater than `threshold`; a tie predicts safe.
+
+    If neither class is available, parse the completion as a standalone yes/no label.
+    That fallback has no unsafe probability and does not apply the threshold.
+    """
     yes_logprob, no_logprob = _class_logprobs(logprobs)
     if yes_logprob is not None or no_logprob is not None:
         yes_value = yes_logprob if yes_logprob is not None else _MISSING_CLASS_LOGPROB

@@ -102,7 +102,9 @@ Each provider signals a refusal differently:
 - OpenRouter can relay a Vertex AI block as a failed choice with `finish_reason: "error"`, which
   Inspect reports as an empty completion with an `unknown` stop. It counts as a refusal only when
   `native_finish_reason` is one of Gemini's block reasons (`SAFETY`, `PROHIBITED_CONTENT`,
-  `BLOCKLIST`, `SPII` or `RECITATION`). Any other failed choice is an invalid output.
+  `BLOCKLIST`, `SPII` or `RECITATION`). Any other failed choice is an upstream failure, such as
+  a dropped connection, and is generated again up to three times before the sample fails. It is
+  never scored, since an empty completion would count as the model's invalid output.
 
 ## Why unsafe F1
 

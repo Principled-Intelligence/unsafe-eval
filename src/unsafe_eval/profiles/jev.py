@@ -44,7 +44,12 @@ def _attach(state: TaskState, questions: str, payload: dict[str, Any]) -> TaskSt
 
 @solver
 def jev_prompt(questions: str) -> Solver:
-    """Carry one benchmark's Choice questions and the message under evaluation."""
+    """Prepare the questions and message for a System One provider request.
+
+    Insert `questions` verbatim as a system message and attach `{"message": prompt}`
+    under `state` in the user message's metadata. The provider reads the questions as
+    JSON; this solver checks only that the supplied string is non-empty.
+    """
     if not questions:
         raise ValueError("jev_prompt requires non-empty questions")
 
@@ -56,7 +61,13 @@ def jev_prompt(questions: str) -> Solver:
 
 @solver
 def jev_policy_prompt(questions: str, policy_field: str = SAFETY_POLICY_FIELD) -> Solver:
-    """Carry the questions plus each sample's operator policy as its own state field."""
+    """Prepare a System One request with separate policy and message fields.
+
+    Insert `questions` verbatim as a system message. Read the policy from the sample
+    metadata key `policy_field` and attach `{"policy": policy, "message": prompt}`
+    under `state` in the user message's metadata. Raise `ValueError` for empty questions
+    or a missing, empty, or non-string policy.
+    """
     if not questions:
         raise ValueError("jev_policy_prompt requires non-empty questions")
 
