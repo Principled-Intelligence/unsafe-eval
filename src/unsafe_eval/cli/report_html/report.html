@@ -14,27 +14,33 @@
 -->
 <style>
 /*@FONTS@*/
-/* The unsafe-eval leaderboard's look, itself taken from principled-intelligence.com: a dark-only
-   near-black ground lit by a violet and a mint glow, with mint for emphasis. */
+/* The unsafe-eval leaderboard's look: a dark-only teal-black ground lit by a green glow, outlined
+   pill inputs, flat tinted pill buttons, and mint for emphasis. */
 :root {
   color-scheme: dark;
-  --bg: #09090d;
-  --text: #ffffff;
-  --body-text: rgba(255, 255, 255, 0.84);
-  --muted: rgba(255, 255, 255, 0.55);
+  --bg: #081116;
+  --surface: #111c21;
+  --block: rgba(255, 255, 255, 0.03);
+  --text: #f2f6f5;
+  --body-text: #d6e0de;
+  --muted: #94a8a5;
+  --faint: #6f8582;
   --accent: #7df7d6;
   --accent-soft: rgba(125, 247, 214, 0.12);
-  --violet: #6644ff;
+  --on-accent: #052219;
+  --violet: #9c8cff;
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
-  --card: rgba(255, 255, 255, 0.03);
   --raised: rgba(255, 255, 255, 0.05);
   --hover: rgba(255, 255, 255, 0.04);
-  --popover: #141419;
-  /* Sticky cells must be opaque: --card over --bg, then --raised or --hover over that. */
-  --sticky: #101014;
-  --sticky-head: #1c1c20;
-  --sticky-hover: #1a1a1e;
+  --track: rgba(255, 255, 255, 0.04);
+  --key: #1c292f;
+  --key-hover: #24343b;
+  --ring: inset 0 0 0 1.5px var(--accent);
+  --pill: 999px;
+  /* Opaque, so the sticky header and model cells hide what scrolls under them. */
+  --table: #101a1f;
+  --table-raised: #172126;
   --column: 8.5rem;
   --font: "Archivo", ui-sans-serif, system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
@@ -43,11 +49,15 @@
 html {
   color: var(--text); font: 14px/1.45 var(--font);
   -webkit-font-smoothing: antialiased;
-  background:
-    radial-gradient(900px 500px at 12% -90px, rgba(102, 68, 255, 0.10), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, rgba(125, 247, 214, 0.07), transparent 55%),
-    var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(1100px 760px at 100% 100%, rgba(52, 150, 118, 0.26), transparent 65%),
+    radial-gradient(900px 520px at 62% 110%, rgba(28, 92, 120, 0.20), transparent 60%),
+    linear-gradient(100deg, #0a141b, var(--bg) 45%, #0b1c1f);
+  background-attachment: scroll, scroll, fixed;
 }
+html, .scroll { scrollbar-color: var(--border-strong) transparent; scrollbar-width: thin; }
+::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--text); }
 body { margin: 0; min-height: 100vh; }
 .wrap { width: min(1520px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 52px; }
 header {
@@ -59,85 +69,103 @@ header {
 h1 { margin: 0 0 4px; font-size: 28px; line-height: 1.15; font-weight: 600; letter-spacing: -0.04em; }
 h1 .accent { color: var(--accent); }
 h2 { margin: 0; font-size: 20px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
-h3 {
-  margin: 24px 0 10px 2px; font: 600 10px var(--mono); letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--muted);
-}
+h3 { margin: 24px 0 10px 2px; font-size: 13px; font-weight: 600; color: var(--muted); }
 h4 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
 .muted { color: var(--muted); }
 #meta { margin: 0; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
-#generated { font: 11px var(--mono); color: var(--muted); white-space: nowrap; }
+#generated { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
 #meta [data-tip] { cursor: help; text-decoration: underline dotted; text-underline-offset: 3px; }
+/* Concentric with the pills inside: their 19px radius plus the 10px padding. */
 #controls {
-  display: flex; flex-wrap: wrap; gap: 10px; align-items: end; padding: 12px; margin-bottom: 12px;
-  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px; margin-bottom: 12px;
+  background: var(--block); border: 1px solid var(--border); border-radius: 29px;
 }
-.group { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .group + .group { margin-left: auto; }
-.control {
-  display: grid; gap: 4px; color: var(--muted); font: 10px var(--mono); letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
+.control { display: flex; align-items: center; gap: 8px; padding-left: 6px; color: var(--muted); font-size: 12px; }
 .control.toggle {
-  display: flex; align-items: center; gap: 7px; margin: 24px 2px 10px; cursor: pointer;
-  color: var(--body-text); font: 12px var(--font); letter-spacing: 0; text-transform: none;
+  width: fit-content; height: 38px; margin: 24px 0 10px; padding: 0 16px 0 12px; border-radius: var(--pill);
+  background: var(--key); color: var(--body-text); cursor: pointer; transition: background 0.12s, color 0.12s, transform 0.12s;
 }
-/* Every control is the same box; the dropdowns share one chevron. */
-select, .filter > summary, button.close {
-  height: 38px; display: inline-flex; align-items: center; background-color: var(--raised);
-  color: var(--text); border: 1px solid var(--border-strong); border-radius: 7px; padding: 0 12px;
-  font: 13px var(--font); letter-spacing: 0; text-transform: none; line-height: 1; cursor: pointer;
-  transition: border-color 0.15s;
-}
+.control.toggle:hover { background: var(--key-hover); color: var(--text); }
+.control.toggle:has(input:checked) { background: var(--accent); color: var(--on-accent); }
+/* Inputs are outlined pills that share one chevron and ring. */
 select, .filter > summary {
-  appearance: none; min-width: 150px; padding-right: 34px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%23ffffff' stroke-opacity='.55' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 12px center; background-size: 12px;
+  appearance: none; height: 38px; min-width: 150px; display: inline-flex; align-items: center;
+  padding: 0 36px 0 16px; border: 0; border-radius: var(--pill); outline: 0;
+  box-shadow: inset 0 0 0 1px var(--border-strong); color: var(--text); font: 13px var(--font);
+  line-height: 1; cursor: pointer; transition: box-shadow 0.12s, background-color 0.12s, color 0.12s;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%23ffffff' stroke-opacity='.55' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center / 12px;
 }
 select { max-width: 22rem; text-overflow: ellipsis; field-sizing: content; }
-select:hover, select:focus, .filter > summary:hover, .filter[open] > summary, button.close:hover {
-  border-color: var(--accent);
+select:hover, select:focus-visible, .filter > summary:hover, .filter > summary:focus-visible { box-shadow: var(--ring); }
+.filter[open] > summary {
+  background-color: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.filter .count { margin-left: 8px; font: 12px var(--mono); color: var(--muted); }
-select option { background: var(--popover); }
+.filter .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.filter[open] .count { color: inherit; opacity: 0.7; }
+select option { background: var(--surface); }
 .filter { position: relative; }
 .filter > summary { list-style: none; }
 .filter > summary::-webkit-details-marker { display: none; }
 .menu {
   position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; min-width: 280px;
-  max-width: 36rem; max-height: 340px; overflow: auto; background: var(--popover);
-  border: 1px solid var(--border-strong); border-radius: 7px; padding: 4px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  max-width: 36rem; max-height: 340px; overflow: auto; background: var(--surface);
+  border: 1px solid var(--border-strong); border-radius: 14px; padding: 5px;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
 }
 .menu label {
-  display: flex; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 5px;
+  display: flex; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 9px;
   cursor: pointer; font-size: 13px; color: var(--body-text); overflow-wrap: anywhere;
 }
 .menu label:hover { background: var(--hover); color: var(--text); }
-input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); }
-.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; }
-.scroll { overflow-x: auto; }
-#detail { padding: 18px 20px; }
-#detail .scroll { border: 1px solid var(--border); border-radius: 10px; }
-table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
-th, td { padding: 0 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--border); }
-tbody tr:last-child td { border-bottom: 0; }
-th {
-  height: 42px; padding-block: 10px; background: var(--raised); font: 600 10px var(--mono);
-  letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); vertical-align: bottom;
+input[type="checkbox"] {
+  appearance: none; flex: none; width: 16px; height: 16px; margin: 0; border-radius: 5px; cursor: inherit;
+  background: transparent center / 12px no-repeat; box-shadow: inset 0 0 0 1.5px var(--faint);
+  transition: background-color 0.15s, box-shadow 0.15s;
 }
-td { height: 50px; }
+input[type="checkbox"]:checked {
+  background-color: var(--accent); box-shadow: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23052219' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 6.2l2.3 2.3 4.7-5'/%3E%3C/svg%3E");
+}
+.control.toggle input:checked {
+  background-color: var(--on-accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%237df7d6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 6.2l2.3 2.3 4.7-5'/%3E%3C/svg%3E");
+}
+label:hover > input[type="checkbox"]:not(:checked) { box-shadow: inset 0 0 0 1.5px var(--muted); }
+button.close {
+  height: 34px; padding: 0 16px; border: 0; border-radius: var(--pill); background: var(--key);
+  color: var(--body-text); font: 500 13px var(--font); cursor: pointer;
+  transition: background 0.12s, color 0.12s, transform 0.12s;
+}
+button.close:hover { background: var(--key-hover); color: var(--text); }
+button.close:active, .control.toggle:active { transform: scale(0.97); }
+.card { background: var(--table); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 16px; }
+.scroll { overflow-x: auto; }
+/* Its own scroll box no taller than the screen, so the header and model column stick inside it. */
+.card.scroll { max-height: calc(100dvh - 24px); overflow: auto; overscroll-behavior-x: contain; }
+#detail { padding: 18px 20px; }
+#detail .scroll { border: 1px solid var(--border); border-radius: 12px; }
+table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { padding: 0 12px; text-align: right; white-space: nowrap; }
+th {
+  position: sticky; top: 0; z-index: 2; height: 42px; padding-block: 10px; background: var(--table-raised);
+  box-shadow: inset 0 -1px 0 var(--border); font: 600 12px var(--font); color: var(--muted); vertical-align: bottom;
+}
+td { height: 44px; border-bottom: 1px solid var(--border); }
+tbody tr:last-child td { border-bottom: 0; }
 /* Value columns share a minimum width and grow to fit their header on one line. */
 th:not(.row), td:not(.row) { min-width: var(--column); }
 th.row, td.row {
-  text-align: left; position: sticky; left: 0; z-index: 1; background: var(--sticky);
+  text-align: left; position: sticky; left: 0; z-index: 1; background: var(--table);
   min-width: 15rem; max-width: 26rem; white-space: normal;
 }
-th.row { background: var(--sticky-head); }
-td.row { padding-block: 10px; }
+th.row { z-index: 3; background: var(--table-raised); }
+td.row { padding-block: 8px; }
 tbody tr:hover td { background-color: var(--hover); }
-tbody tr:hover td.row { background-color: var(--sticky-hover); }
+tbody tr:hover td.row { background-color: color-mix(in srgb, #fff 4%, var(--table)); }
 th button { all: unset; cursor: pointer; display: block; width: 100%; text-align: inherit; }
 th button:disabled { cursor: default; }
 th .bench { color: var(--body-text); }
@@ -152,18 +180,17 @@ th[aria-sort="descending"] .metric::after { content: "↓"; }
 th[aria-sort="ascending"] .metric::after { content: "↑"; }
 .name { font-weight: 600; }
 .setup { display: block; margin-top: 3px; font: 10.5px/1.4 var(--mono); color: var(--muted); overflow-wrap: anywhere; }
-td.num { font-family: var(--mono); }
-.bar { display: block; height: 4px; border-radius: 999px; background: var(--hover); overflow: hidden; }
-.bar > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--violet)); }
+.bar { display: block; height: 4px; border-radius: var(--pill); background: var(--track); overflow: hidden; }
+.bar > i { display: block; height: 100%; border-radius: var(--pill); background: linear-gradient(90deg, var(--accent), var(--violet)); }
 td.best { color: var(--accent); font-weight: 600; }
 td.empty, td.incomplete { color: var(--muted); }
 td.incomplete { font-style: italic; }
 td.clickable { cursor: pointer; }
-.delta { display: inline-block; padding: 2px 7px; margin: -2px -7px; border-radius: 6px; }
+.delta { display: inline-block; padding: 2px 8px; margin: -2px -8px; border-radius: var(--pill); }
 td.flag { outline: 1px dashed var(--muted); outline-offset: -4px; }
 td.flag::after { content: " ⚠"; color: var(--muted); font-size: 0.75rem; }
 .tag {
-  display: inline-flex; margin-left: 10px; padding: 3px 7px; border-radius: 6px; vertical-align: middle;
+  display: inline-flex; margin-left: 10px; padding: 3px 9px; border-radius: var(--pill); vertical-align: middle;
   background: var(--accent-soft); color: var(--accent); font: 500 11px var(--font); white-space: nowrap;
 }
 .detail-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
@@ -171,20 +198,26 @@ td.flag::after { content: " ⚠"; color: var(--muted); font-size: 0.75rem; }
 .key { display: flex; gap: 6px; max-width: 26rem; font-size: 12px; color: var(--body-text); }
 .key > i { flex: none; width: 10px; height: 10px; margin-top: 4px; border-radius: 50%; }
 .groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: 20px 40px; }
-.bar-row { display: grid; grid-template-columns: minmax(4rem, 1fr) 9rem; gap: 12px; align-items: center; padding: 3px 0; font: 12px var(--mono); }
+.bar-row { display: grid; grid-template-columns: minmax(4rem, 1fr) 9rem; gap: 12px; align-items: center; padding: 3px 0; font-size: 12px; }
 .bar-row .value { font-variant-numeric: tabular-nums; }
 .bar-row .value .muted { margin-left: 8px; }
+/* Monospaced, because setup tips line their fields up in columns. */
 #tooltip {
-  position: fixed; z-index: 10; max-width: 460px; padding: 8px 10px; background: var(--popover);
-  border: 1px solid var(--border-strong); border-radius: 7px; font: 11px/1.5 var(--mono);
+  position: fixed; z-index: 10; max-width: 460px; padding: 8px 12px; background: var(--surface);
+  border: 1px solid var(--border-strong); border-radius: 10px; font: 11px/1.5 var(--mono);
   color: var(--body-text); white-space: pre-wrap; pointer-events: none;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
   max-height: calc(100vh - 16px); overflow: hidden; overflow-wrap: anywhere;
 }
 footer { margin-top: 36px; font-size: 11px; color: var(--muted); text-align: center; }
+@media (prefers-reduced-motion: reduce) {
+  :active { transform: none !important; }
+  input[type="checkbox"] { transition: none; }
+}
 @media (max-width: 640px) {
   .wrap { width: min(100% - 24px, 1520px); padding-top: 24px; }
   h1 { font-size: 24px; }
+  #controls { border-radius: 24px; }
   .group + .group { margin-left: 0; }
   select { max-width: 13rem; }
   th.row, td.row { min-width: 10rem; max-width: 12rem; }
@@ -263,6 +296,7 @@ for (const record of DATA.records) {
 const rowByLabel = new Map(DATA.rows.map((row) => [row.label, row]));
 const colorOf = (row) => SERIES[DATA.rows.indexOf(row) % SERIES.length];
 const pretty = (name) => name.replaceAll("_", " ").replace(/\bf1\b/g, "F1");
+const sentence = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 // JSON drops the `.0` of a float, so metric values always get fixed decimals: three for rates
 // and seconds, one for token counts. Only the other scores, such as verdict counts, print whole
 // numbers as they are.
@@ -490,7 +524,7 @@ function renderOverview() {
       `Unweighted mean of ${state.metric} over ${average.benchmarks.join(", ")}.\n` +
       "Each benchmark counts once, whatever its size. A row missing any of them gets no average. " +
       "Hiding a benchmark with the filter takes it out of the average.";
-    head.append(markSort(h("th", { scope: "col", tip }, h("button", { type: "button", onclick: () => toggleSort("average") }, h("span", { class: "bench" }, `Average of ${average.benchmarks.length}`), h("span", { class: "metric" }, pretty(state.metric)))), "average"));
+    head.append(markSort(h("th", { scope: "col", tip }, h("button", { type: "button", onclick: () => toggleSort("average") }, h("span", { class: "bench" }, `Average of ${average.benchmarks.length}`), h("span", { class: "metric" }, sentence(pretty(state.metric))))), "average"));
   }
   for (const benchmark of benchmarks) {
     const metric = shownMetric(benchmark);
@@ -502,7 +536,7 @@ function renderOverview() {
         : `Sort by ${metric}`;
     head.append(markSort(h("th", { scope: "col" },
       h("button", { type: "button", class: "bench", onclick: () => openDetail(benchmark.name), tip: "Open this benchmark's details" }, benchmark.name),
-      h("button", { type: "button", class: fallback ? "metric fallback" : "metric", disabled: !metric, onclick: () => toggleSort(benchmark.name), tip }, metric ? pretty(metric) : "no primary metric"),
+      h("button", { type: "button", class: fallback ? "metric fallback" : "metric", disabled: !metric, onclick: () => toggleSort(benchmark.name), tip }, metric ? sentence(pretty(metric)) : "No primary metric"),
     ), benchmark.name));
   }
   const body = h("tbody");
@@ -534,7 +568,7 @@ function renderSummary() {
       ? `${name} on ${one.name}.`
       : `Unweighted mean of ${name} over ${average.benchmarks.join(", ")}.\nA row missing any of them gets no average.`;
     const note = one ? null : plural(average.benchmarks.length, "benchmark");
-    head.append(markSort(h("th", { scope: "col", tip }, h("button", { type: "button", onclick: () => toggleSort(name) }, h("span", { class: note ? "bench" : "bench metric" }, name === LATENCY ? "latency (s)" : pretty(name)), note ? h("span", { class: "metric" }, note) : null)), name));
+    head.append(markSort(h("th", { scope: "col", tip }, h("button", { type: "button", onclick: () => toggleSort(name) }, h("span", { class: note ? "bench" : "bench metric" }, name === LATENCY ? "Latency (s)" : sentence(pretty(name))), note ? h("span", { class: "metric" }, note) : null)), name));
   }
   const rows = sortedRows();
   const body = h("tbody");
@@ -591,7 +625,7 @@ function openDetail(name) {
 }
 
 function metricTable(rows, columns, get, base, benchmark, rated) {
-  const head = h("tr", {}, h("th", { class: "row", scope: "col" }, "Model"), ...columns.map((c) => h("th", { scope: "col" }, rated ? pretty(c) : c)));
+  const head = h("tr", {}, h("th", { class: "row", scope: "col" }, "Model"), ...columns.map((c) => h("th", { scope: "col" }, rated ? sentence(pretty(c)) : c)));
   const body = h("tbody");
   const best = new Map(columns.map((c) => [c, rated ? bestOf(c, rows, (row) => get(row, c)) : undefined]));
   for (const row of rows) {
@@ -716,7 +750,7 @@ function renderControls() {
         if (switched) state.sort = defaultSort();
         else state.sort.descending = sortsDown(state.sort.key);
         render();
-      }, (value) => (value === SUMMARY_VIEW ? "Summary" : pretty(value)))));
+      }, (value) => (value === SUMMARY_VIEW ? "Summary" : sentence(pretty(value))))));
   }
   pickers.append(h("label", { class: "control" }, "Baseline",
     choice("baseline", ["", ...labels], "", (value) => { state.baseline = value || null; render(); }, (v) => v || "none")));
@@ -725,7 +759,7 @@ function renderControls() {
 
 function renderHeader() {
   const runs = DATA.rows.reduce((count, row) => count + Object.keys(row.runs).length, 0);
-  document.getElementById("generated").textContent = `generated ${DATA.generated_at.replace("T", " ").slice(0, 16)} UTC`;
+  document.getElementById("generated").textContent = `Generated ${DATA.generated_at.replace("T", " ").slice(0, 16)} UTC`;
   const { duplicates, unsuccessful, partial, unreadable } = DATA.notes;
   const counts = [];
   const tip = [];
