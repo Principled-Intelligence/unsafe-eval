@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
       - name: Install uv
         # setup-uv publishes only exact version tags.
-        uses: astral-sh/setup-uv@v10.3.0
+        uses: astral-sh/setup-uv@v10.3.2
 
       - name: Build unsafe-eval
         run: uv build
