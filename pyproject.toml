@@ -82,7 +82,7 @@ dev = [
   "pre-commit>=4,<5",
   "pytest>=9.0.3,<10",
   "pytest-cov>=6,<8",
-  "ruff>=0.11,<0.17",
+  "ruff>=0.11,<0.18",
   "ty==0.0.84",
   # The TypeSafe provider annotates the SDK's response types and the tests build
   # them, so the SDK is a development dependency as well as the `typesafe` extra.
