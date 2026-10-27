@@ -2596,7 +2596,7 @@ wheels = [
 
 [[package]]
 name = "laya"
-version = "0.3.22"
+version = "0.4.14"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "huggingface-hub" },
@@ -2606,9 +2606,9 @@ dependencies = [
     { name = "torch" },
     { name = "transformers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/88/a7/d3cf23b51f8c7db94b7bbcacd0da16570f0edf70f02fc16e3fcec47fc844/laya-0.3.22.tar.gz", hash = "sha256:2c26d1b8e70f5620f990c4ed0cda66f17730fd51965450f755f4707255fb20c4", size = 670882, upload-time = "2026-09-29T17:48:27.061Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5f/47/dbbd333bf4920fddee23d250e167820760e9db3eec081145f424cff4a0a1/laya-0.4.14.tar.gz", hash = "sha256:3218cc4fb5fe8905f78a54a3d91feba7bfb0e939ae87fa7956929b7fbed268db", size = 1332291, upload-time = "2026-10-23T12:50:29.659Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e1/b0/81cae4af718581caf783457bc22b2ab6e3ecca22a9d3dd494d50c8c67654/laya-0.3.22-py3-none-any.whl", hash = "sha256:408e716b946a0566a9d4090117d4df9647540b6435e2f3dfed0b2c6b1abeed8a", size = 251583, upload-time = "2026-09-29T17:48:25.621Z" },
+    { url = "https://files.pythonhosted.org/packages/89/6a/e8fd7c88ba87cec0896bf1edb9742f512c7dc79d7107270e88e624785f45/laya-0.4.14-py3-none-any.whl", hash = "sha256:e547dd6670528114458355f66666b1e5f23e481361ba658a7e8a635e8b080e8a", size = 442980, upload-time = "2026-10-23T12:50:28.096Z" },
 ]
 
 [[package]]
@@ -7203,8 +7203,8 @@ requires-dist = [
     { name = "inspect-ai", specifier = ">=0.3.273,<0.4" },
     { name = "kernels", marker = "extra == 'all'", specifier = ">=0.17,<0.18" },
     { name = "kernels", marker = "extra == 'clef'", specifier = ">=0.17,<0.18" },
-    { name = "laya", marker = "extra == 'all'", specifier = "==0.3.22" },
-    { name = "laya", marker = "extra == 'laya'", specifier = "==0.3.22" },
+    { name = "laya", marker = "extra == 'all'", specifier = "==0.4.14" },
+    { name = "laya", marker = "extra == 'laya'", specifier = "==0.4.14" },
     { name = "mistral-common", marker = "extra == 'all'", specifier = ">=1.11.5" },
     { name = "mistral-common", marker = "extra == 'clm'", specifier = ">=1.11.5" },
     { name = "mistral-common", marker = "extra == 'orbitals'", specifier = ">=1.11.5" },
