@@ -30,6 +30,7 @@ def print_banner() -> None:
 
     console = Console()
     wide_enough = console.width >= max(len(line) for line in _WIDE.splitlines())
+    console.print()
     # The report page's --accent color.
     console.print(Text(_WIDE if wide_enough else _NARROW, style="bold #7DF7D6"))
     console.print(" A framework for reproducible AI safety evaluation.")
