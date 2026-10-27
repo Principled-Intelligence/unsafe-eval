@@ -44,7 +44,7 @@ hf = [
 ]
 # Exact: the package builds Laya's input sequence and routes it, so upgrading it changes the
 # protocol.
-laya = ["laya==0.3.22"]
+laya = ["laya==0.4.14"]
 openai = ["openai>=3.28.0,<4"]
 openrouter = ["openai>=3.28.0,<4"]
 # Exact: the SDK builds ScopeGuard's prompt, so upgrading it changes the protocol.
