@@ -57,7 +57,7 @@ vllm = [
   # vLLM's suffix speculative decoding; vLLM names this exact version.
   "arctic-inference==0.1.1; sys_platform == 'linux'",
   "mistral-common>=1.11.5",
-  "vllm>=0.31,<0.32; sys_platform == 'linux'",
+  "vllm>=0.31,<0.33; sys_platform == 'linux'",
 ]
 
 [project.urls]
