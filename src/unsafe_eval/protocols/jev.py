@@ -29,7 +29,11 @@ from functools import partial
 from inspect_ai.model import GenerateConfig
 from inspect_ai.solver import Solver
 
-from unsafe_eval.profiles.jev import jev_policy_prompt, jev_prompt
+from unsafe_eval.profiles.jev import (
+    jev_policy_prompt,
+    jev_prompt,
+    system_one_generate_or_refusal,
+)
 from unsafe_eval.protocols._benchmark_specs import (
     BenchmarkName,
     BenchmarkProtocolSpec,
@@ -79,6 +83,7 @@ def choice_protocol(
     return SafetyProtocol(
         setup=setup,
         scorer=choice_safety(),
+        solver=system_one_generate_or_refusal(),
         config=GenerateConfig(),
         # Only unsafe-only benchmarks aggregate the probability; mixed-label ones keep it
         # per sample.

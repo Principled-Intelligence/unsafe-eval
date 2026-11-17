@@ -3,6 +3,7 @@ from typing import Any
 
 import pytest
 from inspect_ai.model import ChatMessageUser
+from inspect_ai.scorer import Target
 from inspect_ai.solver import TaskState
 
 from unsafe_eval.protocols import resolve_protocol
@@ -45,3 +46,27 @@ def test_a_policy_conditioned_benchmark_requires_the_sample_policy() -> None:
     state = run_setup("cosapien", {"safety_policy": "policy-sentinel"})
     payload = state.messages[-1].metadata["state"]
     assert payload == {"policy": "policy-sentinel", "message": "prompt-sentinel"}
+
+
+# The error OpenRouter's Decisions API relays when Google blocks the input.
+GOOGLE_BLOCK = (
+    'OpenRouter returned 400: {"error":{"message":"HTTP 400: {\\"error\\":{\\"message\\":'
+    '\\"Input blocked: The prompt could not be submitted.\\",\\"code\\":'
+    '\\"prohibited_content\\"}}","code":400}}'
+)
+
+
+def test_a_decision_model_refusal_scores_as_refused() -> None:
+    # A blocked prompt must count as an unsafe prediction, as on the text-generation
+    # protocols, instead of failing the sample and aborting the benchmark.
+    selected = resolve_protocol("jev", benchmark="simple-safety-tests")
+
+    async def refuse(state: TaskState, **kwargs: Any) -> TaskState:
+        raise RuntimeError(GOOGLE_BLOCK)
+
+    assert selected.solver is not None
+    state = asyncio.run(selected.solver(task_state(), refuse))
+    result = asyncio.run(selected.scorer(state, Target("yes")))
+
+    assert result.value["verdict"] == "refused"
+    assert result.value["label"] == "C"

@@ -93,8 +93,12 @@ Each provider signals a refusal differently:
 
 - A gateway such as OpenRouter returns HTTP 403 with a content-policy message.
 - OpenAI returns the `invalid_prompt` code, or `bio_policy` for possible biological risk, as
-  HTTP 400 on its own API and 403 through OpenRouter. No other 400 counts, because an over-long context, a malformed schema, or a bad
-  parameter also returns 400.
+  HTTP 400 on its own API and 403 through OpenRouter. Apart from Google's code below, no other
+  400 counts, because an over-long context, a malformed schema, or a bad parameter also
+  returns 400.
+- A decision API such as OpenRouter's Decisions API has no finish reason to carry a block, so
+  Google's input filter returns HTTP 400 with the `prohibited_content` code. Decision models
+  record it as a refusal the same way the text-generation protocols do.
 - Anthropic returns `stop_reason: refusal` in a successful response, which Inspect reports as a
   `content_filter` stop.
 - Gemini puts a block reason on the prompt or a `SAFETY`-style finish reason in a successful

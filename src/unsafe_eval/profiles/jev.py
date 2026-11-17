@@ -23,6 +23,8 @@ from typing import Any
 from inspect_ai.model import ChatMessageSystem
 from inspect_ai.solver import Generate, Solver, TaskState, solver
 
+from unsafe_eval._refusal import generate_or_refusal
+
 # The sample metadata field the policy-conditioned benchmarks populate.
 SAFETY_POLICY_FIELD = "safety_policy"
 
@@ -83,5 +85,21 @@ def jev_policy_prompt(questions: str, policy_field: str = SAFETY_POLICY_FIELD) -
             questions,
             {"policy": policy, "message": state.user_prompt.text},
         )
+
+    return solve
+
+
+@solver
+def system_one_generate_or_refusal() -> Solver:
+    """Generate, and record a prompt the provider refuses as a provider refusal.
+
+    A hosted decision API refuses a prompt with an HTTP error rather than an answer, such as
+    the 400 OpenRouter relays when Google blocks the input. Recording it lets `choice_safety`
+    score it as an unsafe prediction, as the text-generation protocols do. A local model
+    never refuses, so its runs are unaffected.
+    """
+
+    async def solve(state: TaskState, generate: Generate) -> TaskState:
+        return await generate_or_refusal(state, generate)
 
     return solve

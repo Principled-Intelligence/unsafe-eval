@@ -80,6 +80,11 @@ OPENAI_REFUSAL_CODES: tuple[str, ...] = ("invalid_prompt", "bio_policy")
 RELAYED_FAILURE_ATTEMPTS = 3
 OPENAI_REFUSAL_STATUSES: tuple[str, ...] = ("400", PROVIDER_REFUSAL_STATUS)
 
+# Google's code for a prompt its input filter blocks under the Generative AI Prohibited Use
+# policy, served at 400 by a decision API that answers no `finish_reason`, and relayed
+# unchanged by OpenRouter's Decisions API.
+GOOGLE_PROHIBITED_CONTENT_CODE = "prohibited_content"
+
 # Substrings identifying a provider's input-side content refusal, matched
 # case-insensitively, each against the statuses it is served with. Kept explicit
 # rather than inferred from the status alone.
@@ -88,6 +93,7 @@ PROVIDER_CONTENT_REFUSAL_SIGNATURES: dict[str, tuple[str, ...]] = {
     "content policy": (PROVIDER_REFUSAL_STATUS,),
     "content_policy_violation": (PROVIDER_REFUSAL_STATUS,),
     **dict.fromkeys(OPENAI_REFUSAL_CODES, OPENAI_REFUSAL_STATUSES),
+    GOOGLE_PROHIBITED_CONTENT_CODE: ("400",),
 }
 
 
