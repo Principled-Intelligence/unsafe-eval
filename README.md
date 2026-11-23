@@ -232,11 +232,12 @@ change, and the metrics. Each configuration names the protocol it uses. These ar
 | Qwen3Guard-Gen (0.6B, 4B, 8B)                       | `qwen3-guard-gen`             |
 | GPT                                                 | `gpt`                         |
 | Claude (Haiku 4.5, Sonnet 5, Opus 5)                | `claude`                      |
-| Gemini (3.8 Flash, 3.1 Pro preview)                 | `gemini`                      |
+| Gemini (3.8 Flash, 3.1 Pro preview, 4)              | `gemini`                      |
 | Jev                                                 | `jev`                         |
 | Kev (0.8B, 4B, 9B, 27B, 27B in FP8)                 | `jev`                         |
 | Parakh-4B                                           | `jev`                         |
 | d1-3B                                               | `d1`                          |
+| Gemini Decision 1                                   | `d1`                          |
 | CLM-v0.1-8B                                         | `jev`                         |
 | Clef-Flash                                          | `clef`                        |
 | Laya                                                | `laya`                        |

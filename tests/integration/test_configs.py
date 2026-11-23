@@ -14,6 +14,7 @@ CONFIG_DIR = Path(__file__).parents[2] / "src" / "unsafe_eval" / "configs"
 # rather than its bytes -- but is still not a moving alias. `typesafe/` takes an exact model
 # version, and its provider goes further than any other here by failing the run when the response
 # reports a different served version, so the pin is verified rather than merely stated.
+# `openrouter-decisions/` takes a dated slug and verifies it the same way.
 # `anthropic/` takes a snapshot ID, dated or not. `google/` takes a stable model code on Vertex AI,
 # which Google documents as pointing to one specific model. `openai/` can express none of these for
 # every model it serves, and `google/` none for a preview model, which is what UNPINNED_CONFIGS
@@ -33,6 +34,7 @@ PROVIDER_PREFIXES = (
     "d1/",
     "orbitals/",
     "clm/",
+    "openrouter-decisions/",
 )
 
 # Configurations whose provider publishes no immutable identifier for the model
@@ -52,6 +54,9 @@ UNPINNED_CONFIGS = {
     # A preview model code, which Google does not document as one fixed build. The
     # OpenRouter tree of the same name pins a dated slug.
     "google/gemini-3.1-pro-preview",
+    # Their configurations do not claim a stable model code.
+    "google/gemini-4-carbon",
+    "google/gemini-4-neon",
 }
 
 # The immutable identifier each configuration pins its model to: a hub commit hash
@@ -79,10 +84,13 @@ CONFIG_REVISIONS = {
     # Google documents a stable model code as pointing to one specific model, so the
     # code is the pin. OpenRouter publishes a dated slug for both.
     "google/gemini-3.8-flash": "google/vertex/gemini-3.8-flash",
+    "google/gemini-4-argon": "google/vertex/gemini-4-argon",
+    "google/gemini-4-hydrogen": "google/vertex/gemini-4-hydrogen",
     "openrouter/gemini-3.8-flash": "gemini-3.8-flash-20260902",
     "openrouter/gemini-3.1-pro-preview": "gemini-3.1-pro-preview-20260219",
     "openrouter/nemotron-3.5-content-safety-free": "nemotron-3.5-content-safety-20260604:free",
     "typesafe/jev-1.13": "jev-1.13.0",
+    "openrouter-decisions/gemini-decision-1": "gemini-decision-1-20261111",
     "laya/laya": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
     "clef/clef-flash": "17f0b0ad64efb65d273590632833508766b2aae6",
     "clef/clef-fp8": "2f3de3dd85f379784083b0814d997ab627200f0c",
@@ -150,6 +158,10 @@ CONFIG_PROTOCOLS = {
     # One gemini protocol for every Gemini tree, over either route.
     "google/gemini-3.8-flash": "gemini",
     "google/gemini-3.1-pro-preview": "gemini",
+    "google/gemini-4-argon": "gemini",
+    "google/gemini-4-hydrogen": "gemini",
+    "google/gemini-4-carbon": "gemini",
+    "google/gemini-4-neon": "gemini",
     "openrouter/gemini-3.8-flash": "gemini",
     "openrouter/gemini-3.1-pro-preview": "gemini",
     # The same weights as the vllm/nemotron-3.5-content-safety tree, on the `openrouter`
@@ -161,6 +173,8 @@ CONFIG_PROTOCOLS = {
     "clef/clef-flash": "clef",
     "clef/clef-fp8": "clef",
     "d1/d1-3b": "d1",
+    # A hosted decision model that takes d1's questions unchanged.
+    "openrouter-decisions/gemini-decision-1": "d1",
     # Kev serves Jev's API, so it answers Jev's questions.
     "kev/kev-27b": "jev",
     "kev/kev-27b-fp8": "jev",

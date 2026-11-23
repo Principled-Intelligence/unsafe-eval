@@ -87,7 +87,7 @@ def test_anything_but_one_choice_question_never_reaches_the_model(
 ) -> None:
     api, model = provider(monkeypatch)
 
-    with pytest.raises(ValueError, match="d1 questions"):
+    with pytest.raises(ValueError, match="The questions must"):
         generate(api, questions)
     assert model.batches == []
 

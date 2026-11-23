@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.14' and platform_machine == 's390x' and sys_platform == 'darwin'",
@@ -7090,6 +7090,7 @@ dependencies = [
     { name = "click" },
     { name = "datasets" },
     { name = "fsspec" },
+    { name = "httpx" },
     { name = "huggingface-hub" },
     { name = "inspect-ai" },
     { name = "pydantic" },
@@ -7199,6 +7200,7 @@ requires-dist = [
     { name = "gliner2", extras = ["local"], marker = "extra == 'gliner'", specifier = "==2.0.0" },
     { name = "google-genai", marker = "extra == 'all'", specifier = ">=2.29.0,<3" },
     { name = "google-genai", marker = "extra == 'google'", specifier = ">=2.29.0,<3" },
+    { name = "httpx", specifier = ">=0.28,<1" },
     { name = "huggingface-hub", specifier = ">=0.25,<3" },
     { name = "inspect-ai", specifier = ">=0.3.273,<0.4" },
     { name = "kernels", marker = "extra == 'all'", specifier = ">=0.17,<0.18" },

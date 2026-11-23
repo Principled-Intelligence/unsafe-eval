@@ -247,7 +247,7 @@ A sample's latency is the time Inspect records for the evaluated model's request
 - The `laya`, `gliner2`, `clef`, `d1` and `clm` providers run the requests that queued while the GPU was busy as one
   batch, and report that batch's own time, leaving out the wait for the batch before it.
 - The `kev` provider records the time for each HTTP request to `kev.serve`, including time in the server's batch queue.
-- Hosted providers, including `typesafe` for Jev, record the successful request's own time:
+- Hosted providers, including `typesafe` for Jev and `openrouter-decisions`, record the successful request's own time:
   Inspect retries a failed request and leaves the failed attempt out.
 - Inspect's `hf` provider records the whole call, including up to 2 seconds spent collecting a
   batch and up to 1 second polling for its result, so its latency is not the model's.

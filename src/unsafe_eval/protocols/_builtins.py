@@ -6,6 +6,7 @@ import unsafe_eval.providers.d1  # noqa: F401  (registers the `d1/` model provid
 import unsafe_eval.providers.gliner2  # noqa: F401  (registers the `gliner2/` model provider)
 import unsafe_eval.providers.kev  # noqa: F401  (registers the `kev/` model provider)
 import unsafe_eval.providers.laya  # noqa: F401  (registers the `laya/` model provider)
+import unsafe_eval.providers.openrouter_decisions  # noqa: F401  (registers `openrouter-decisions/`)
 import unsafe_eval.providers.orbitals  # noqa: F401  (registers the `orbitals/` model provider)
 from unsafe_eval.profiles.claude import claude_prompt
 from unsafe_eval.profiles.gemini import gemini_prompt
