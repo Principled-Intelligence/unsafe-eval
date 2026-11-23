@@ -198,10 +198,10 @@ every service OpenRouter uses for these models accepts a JSON-schema response fo
 
 ### Gemini
 
-`gemini` serves Gemini 3.8 Flash and 3.1 Pro preview on both routes, and Gemini 4 Argon, Hydrogen,
-Carbon and Neon on `google` only. Argon and Carbon run at `medium`, Hydrogen and Neon at `high`.
-`reasoning_effort` is `low` (the default),
-`medium` or `high`, and becomes Gemini's thinking level of the same name on both routes. Gemini 3
+The packaged `gemini` configurations run Gemini 3.8 Flash and 3.1 Pro preview on both routes,
+and Gemini 4 Argon, Hydrogen, Carbon and Neon on `google` only. They run Argon and Carbon at
+`medium`, and Hydrogen and Neon at `high`. `reasoning_effort` is `low` (the default), `medium` or
+`high`, and becomes Gemini's thinking level of the same name on both routes. Gemini 3
 models cannot turn thinking off, so `none` is rejected, and neither model offers `minimal`.
 `max_tokens` is 32768: Gemini counts thinking against it, and a thinking level sets no fixed
 budget.
@@ -216,7 +216,7 @@ Google serves Gemini from Vertex AI and from Google AI Studio (the Gemini Develo
 two filter differently: in this package's runs AI Studio blocked more of these prompts. The
 packaged configurations send both routes to Vertex AI in the `global` region. The `google` trees
 name `google/vertex/<model>` with `location: global`, and the OpenRouter trees pin OpenRouter's
-upstream to `google-vertex/global` with fallbacks off. `global` serves every configured model
+upstream to `google-vertex/global` with fallbacks off. `global` serves all three configured models
 and is where OpenRouter's Vertex endpoint runs.
 
 ## Question-answering and encoder models
@@ -318,10 +318,10 @@ a batch can move a probability in its last digits from one run to the next.
 
 `d1` also serves `openrouter-decisions/gemini-decision-1`, which pins
 `openrouter-decisions/google/gemini-decision-1-20261111`. Gemini Decision 1 is Google's hosted
-decision model, reached through OpenRouter's Decisions API, and it takes d1's state and questions
-unchanged. The `openrouter-decisions` model provider sends one request per sample and fails the
-run if a model other than the dated slug answers. A prompt Google's input filter blocks comes
-back as an error, which the protocol records as a
+decision model on OpenRouter's Decisions API. It takes d1's state and questions unchanged. The
+`openrouter-decisions` model provider sends each sample in a separate request and fails the run
+if a model other than the dated slug answers. When Google's input filter blocks a prompt, the
+API returns an error. The protocol records it as a
 [provider refusal](metrics.md#provider-refusals).
 
 ### GLiNER2.5-Decide

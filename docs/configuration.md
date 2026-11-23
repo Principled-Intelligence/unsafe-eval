@@ -72,7 +72,7 @@ model:
   - `gliner2` and `clef`: `revision` is required, and `device` defaults to `cuda`. `clef` also
     takes `quantization: fp8`.
   - `typesafe`: `revision` is optional and must repeat the model version in the model string.
-  - `openrouter-decisions`: takes no arguments. The model string names the dated slug.
+  - `openrouter-decisions`: requires no provider-specific arguments. The model string names the dated slug.
   - `kev`: `revision` pins the checkpoint's hub commit, and `kev_revision` pins Kev's server code. Both are required. `quantization: fp8` stores a full-weight checkpoint's linear layers in FP8. The provider starts its own server and rejects `base_url`.
   - `clm`: `revision` pins the heads' hub commit, and `encoder_revision` pins Qwen3-8B, the encoder they score. Both are required.
 

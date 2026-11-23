@@ -83,7 +83,7 @@ runtime.
 
 ### Hosted models: a snapshot where one exists
 
-Hosted APIs identify models by name. Except for TypeSafe, their configurations omit the `revision` model argument and logs record `revision: null`. When a provider publishes an immutable snapshot, its model ID is the pin and appears in the configuration's model string. OpenRouter configurations for [hosted general-purpose models](protocols.md#hosted-general-purpose-models) also pin the upstream service. An `openrouter-decisions` configuration names a dated slug, and its provider fails the run if the response reports another model.
+Hosted APIs identify models by name. Except for TypeSafe, their configurations omit the `revision` model argument and logs record `revision: null`. When a provider publishes an immutable snapshot, its model ID is the pin and appears in the configuration's model string. OpenRouter configurations for [hosted general-purpose models](protocols.md#hosted-general-purpose-models) also pin the upstream service. An `openrouter-decisions` configuration names a dated slug. Its provider fails the run if the response reports another model.
 
 A moving alias can point to a different model on a later run. Configurations using one are runnable, but their results cannot be compared with later runs as if the model were unchanged. `tests/integration/test_configs.py` lists these exceptions explicitly in `UNPINNED_CONFIGS`:
 

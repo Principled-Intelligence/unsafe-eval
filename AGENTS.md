@@ -24,7 +24,7 @@ weights, caches, or files from `runs/` or `logs/`.
   cannot reach through a stock provider. `typesafe.py` serves Jev, which answers structured
   questions instead of generating text. `laya.py` runs Laya, an open-weight model with the same
   interface, and `gliner2.py` runs GLiNER2 classifiers, both locally. `openrouter_decisions.py`
-  reaches hosted decision models on OpenRouter's Decisions API. A provider translates one
+  calls hosted decision models through OpenRouter's Decisions API. A provider translates one
   conversation into one model call and holds no safety knowledge: it never decides which label
   means unsafe and never applies a threshold. Keep the vendor SDK out of the module's import
   path, because `protocols/_builtins.py` imports it to register the provider and the SDK is an
