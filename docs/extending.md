@@ -60,7 +60,7 @@ a primary metric other than `unsafe_f1` or `unsafe_recall`.
 protocol passes it and always accepts `validate_prompt_resource_hashes`, which every protocol must
 honour. A protocol that checks its own options by hand can reject that one by mistake.
 
-If Inspect has no provider for a model, write one using [Inspect's model API guide](https://inspect.aisi.org.uk/extensions-model-api.html). This package's providers are `typesafe`, `laya`, `gliner2`, `clef`, `kev`, `d1`, and `clm`.
+If Inspect has no provider for a model, write one using [Inspect's model API guide](https://inspect.aisi.org.uk/extensions-model-api.html). This package's providers are `typesafe`, `openrouter-decisions`, `laya`, `gliner2`, `clef`, `kev`, `d1`, `orbitals`, and `clm`.
 
 ## Declaring routes
 

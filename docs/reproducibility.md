@@ -83,7 +83,7 @@ runtime.
 
 ### Hosted models: a snapshot where one exists
 
-Hosted APIs identify models by name. Except for TypeSafe, their configurations omit the `revision` model argument and logs record `revision: null`. When a provider publishes an immutable snapshot, its model ID is the pin and appears in the configuration's model string. OpenRouter configurations for [hosted general-purpose models](protocols.md#hosted-general-purpose-models) also pin the upstream service.
+Hosted APIs identify models by name. Except for TypeSafe, their configurations omit the `revision` model argument and logs record `revision: null`. When a provider publishes an immutable snapshot, its model ID is the pin and appears in the configuration's model string. OpenRouter configurations for [hosted general-purpose models](protocols.md#hosted-general-purpose-models) also pin the upstream service. An `openrouter-decisions` configuration names a dated slug. Its provider fails the run if the response reports another model.
 
 A moving alias can point to a different model on a later run. Configurations using one are runnable, but their results cannot be compared with later runs as if the model were unchanged. `tests/integration/test_configs.py` lists these exceptions explicitly in `UNPINNED_CONFIGS`:
 
@@ -91,6 +91,8 @@ A moving alias can point to a different model on a later run. Configurations usi
   snapshot.
 - `google/gemini-3.1-pro-preview`, a preview model, which Google does not document as one fixed
   build. The OpenRouter tree of the same name pins a snapshot.
+- `google/gemini-4-carbon` and `google/gemini-4-neon`, whose configurations do not claim a stable
+  model code.
 
 Their dataset revisions and prompt hashes are pinned like any other configuration's.
 

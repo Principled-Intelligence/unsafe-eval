@@ -42,21 +42,21 @@ def check_question(questions: dict[str, Any]) -> None:
     """Raise `ValueError` unless this is one Choice question written in plain strings."""
     if len(questions) != 1:
         raise ValueError(
-            f"d1 questions must declare exactly one question; got {sorted(questions)!r}"
+            f"The questions must declare exactly one question; got {sorted(questions)!r}"
         )
     (question,) = questions.values()
     criteria = question.get("criteria")
     if question.get("type") != "choice" or not isinstance(criteria, dict) or not criteria:
-        raise ValueError("d1 questions must declare a Choice question")
+        raise ValueError("The questions must declare a Choice question")
     texts = [question.get("instructions"), *criteria.values()]
     if not all(isinstance(text, str) for text in texts):
-        raise ValueError("d1 questions must give instructions and options as plain strings")
+        raise ValueError("The questions must give instructions and options as plain strings")
 
 
 def model_output_from_response(
     response: dict[str, Any], *, model_name: str, metadata: dict[str, Any]
 ) -> ModelOutput:
-    """Present a local System One model's single Choice answer as a completion."""
+    """Present a System One model's single Choice answer as a completion."""
     answers = response["answers"]
     if len(answers) != 1:
         raise ValueError(

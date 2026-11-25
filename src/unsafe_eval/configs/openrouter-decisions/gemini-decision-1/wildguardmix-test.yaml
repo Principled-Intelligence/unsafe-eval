@@ -1,0 +1,13 @@
+# Gemini Decision 1, Google's hosted decision model, on OpenRouter's Decisions API.
+# Same protocol and questions as d1. `google/gemini-decision-1-20261111` is the dated slug
+# OpenRouter reports for `google/gemini-decision-1`; the provider fails the run if it serves
+# another.
+# A hosted run pins its inputs; its outputs can still vary. See docs/reproducibility.md.
+task:
+  task: unsafe_eval/wildguard_mix_prompt_safety
+  args:
+    protocol: d1
+    dataset_revision: d29c47f41c8b51348b5c8e8c81c039b3132b66d1
+
+model:
+  model: openrouter-decisions/google/gemini-decision-1-20261111

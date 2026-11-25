@@ -72,6 +72,7 @@ model:
   - `gliner2` and `clef`: `revision` is required, and `device` defaults to `cuda`. `clef` also
     takes `quantization: fp8`.
   - `typesafe`: `revision` is optional and must repeat the model version in the model string.
+  - `openrouter-decisions`: requires no provider-specific arguments. The model string names the dated slug.
   - `kev`: `revision` pins the checkpoint's hub commit, and `kev_revision` pins Kev's server code. Both are required. `quantization: fp8` stores a full-weight checkpoint's linear layers in FP8. The provider starts its own server and rejects `base_url`.
   - `clm`: `revision` pins the heads' hub commit, and `encoder_revision` pins Qwen3-8B, the encoder they score. Both are required.
 
@@ -129,7 +130,7 @@ identifier and sweep them like the packaged ones, lay them out as
 
 ## Runtimes and providers
 
-For most providers, install the relevant extra and supply a credential. The package includes providers for models Inspect cannot otherwise reach. `typesafe` calls the TypeSafe System One API. `kev` runs Kev's open System One models on a local server. `orbitals` runs ScopeGuard through its own SDK on a local vLLM server. `clm` runs CLM's heads in-process over a local Qwen3-8B server. `laya`, `gliner2`, `clef`, and `d1` run in-process. To write another provider, see Inspect's [Model API guide](https://inspect.aisi.org.uk/extensions-model-api.html).
+For most providers, install the relevant extra and supply a credential. The package includes providers for models Inspect cannot otherwise reach. `typesafe` calls the TypeSafe System One API. `openrouter-decisions` calls OpenRouter's Decisions API, which serves hosted decision models. `kev` runs Kev's open System One models on a local server. `orbitals` runs ScopeGuard through its own SDK on a local vLLM server. `clm` runs CLM's heads in-process over a local Qwen3-8B server. `laya`, `gliner2`, `clef`, and `d1` run in-process. To write another provider, see Inspect's [Model API guide](https://inspect.aisi.org.uk/extensions-model-api.html).
 
 | Provider | Model prefix | Install extra | Credential | Revision pin<sup>1</sup> |
 | --- | --- | --- | --- | --- |
@@ -138,6 +139,7 @@ For most providers, install the relevant extra and supply a credential. The pack
 | [Google](https://inspect.aisi.org.uk/providers.html#google-gemini) | `google/<model>`, or `google/vertex/<model>` for Vertex AI | `google` | `GOOGLE_API_KEY`; for Vertex, `gcloud auth application-default login` and `GOOGLE_CLOUD_PROJECT` | Snapshot, except previews |
 | [OpenRouter](https://inspect.aisi.org.uk/providers.html#openrouter) | `openrouter/<org>/<model>` | `openrouter` | `OPENROUTER_API_KEY` | Snapshot, where published |
 | TypeSafe | `typesafe/<model-version>` | `typesafe` | `TYPESAFE_API_KEY` | Exact version, verified |
+| OpenRouter Decisions | `openrouter-decisions/<org>/<dated-model>` | None | `OPENROUTER_API_KEY` | Dated slug, verified |
 | [vLLM](https://inspect.aisi.org.uk/providers.html#vllm) | `vllm/<hub-repo>` | `vllm`; `openai` for remote | `VLLM_BASE_URL`, `VLLM_API_KEY` | Yes |
 | [Hugging Face](https://inspect.aisi.org.uk/providers.html#hugging-face) | `hf/<hub-repo>` | `hf` | `HF_TOKEN` (gated repos only) | Yes |
 | Laya | `laya/<hub-repo>` | `laya` | None | Yes, required |

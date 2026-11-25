@@ -119,6 +119,14 @@ def test_only_openai_refusal_codes_widen_to_400(signature: str) -> None:
     assert provider_refusal_reason(f"Error code: 403 - {signature}") is not None
 
 
+def test_google_prohibited_content_is_a_refusal_only_at_400() -> None:
+    # A decision API has no finish reason to carry Google's block, so it arrives as a 400.
+    error = 'OpenRouter returned 400: {"error":{"code":"prohibited_content"}}'
+
+    assert provider_refusal_reason(error) == error
+    assert provider_refusal_reason(error.replace("400", "429")) is None
+
+
 def test_invalid_prompt_outside_the_refusal_statuses_is_not_a_refusal() -> None:
     assert provider_refusal_reason("Error code: 429 - invalid_prompt retry guidance") is None
 

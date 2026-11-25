@@ -12,11 +12,11 @@ A protocol defines how to evaluate a model family: its prompts for each benchmar
 | [`polyguard-qwen`](#polyguard-qwen) | `vllm/polyguard-qwen` | none | none |
 | [`gpt`](#gpt) | `openai/` and `openrouter/` `gpt-5.6-sol`, `gpt-5.6-luna` | `route`, `output_fields` (`["reasoning", "user_safety"]`), `reasoning_effort` (`low`) | `openai`, `openrouter` |
 | [`claude`](#claude) | `anthropic/` and `openrouter/` `claude-haiku-4.5`, `claude-sonnet-5`, `claude-opus-5` | `route`, `output_fields` (`["reasoning", "user_safety"]`), `reasoning_effort` (`low`) | `anthropic`, `openrouter` |
-| [`gemini`](#gemini) | `google/` and `openrouter/` `gemini-3.8-flash`, `gemini-3.1-pro-preview` | `route`, `output_fields` (`["reasoning", "user_safety"]`), `reasoning_effort` (`low`) | `google`, `openrouter` |
+| [`gemini`](#gemini) | `google/` and `openrouter/` `gemini-3.8-flash`, `gemini-3.1-pro-preview`; `google/gemini-4-argon`, `-hydrogen`, `-carbon`, `-neon` | `route`, `output_fields` (`["reasoning", "user_safety"]`), `reasoning_effort` (`low`) | `google`, `openrouter` |
 | [`jev`](#jev) | `typesafe/jev-1.13`, `kev/kev-27b`, `kev/kev-27b-fp8`, `kev/kev-9b`, `kev/kev-4b`, `kev/kev-0.8b`, `kev/parakh-4b`, `clm/clm-v0.1-8b` | none | none |
 | [`laya`](#laya) | `laya/laya` | none | none |
 | [`clef`](#clef) | `clef/clef-flash`, `clef/clef-fp8` | none | none |
-| [`d1`](#d1) | `d1/d1-3b` | none | none |
+| [`d1`](#d1) | `d1/d1-3b`, `openrouter-decisions/gemini-decision-1` | none | none |
 | [`gliner2.5-decide`](#gliner25-decide) | `gliner2/gliner2.5-decide` | none | none |
 | [`gliguard`](#gliguard) | `gliner2/gliguard-300m` | none | none |
 
@@ -198,8 +198,10 @@ every service OpenRouter uses for these models accepts a JSON-schema response fo
 
 ### Gemini
 
-`gemini` serves Gemini 3.8 Flash and 3.1 Pro preview. `reasoning_effort` is `low` (the default),
-`medium` or `high`, and becomes Gemini's thinking level of the same name on both routes. Gemini 3
+The packaged `gemini` configurations run Gemini 3.8 Flash and 3.1 Pro preview on both routes,
+and Gemini 4 Argon, Hydrogen, Carbon and Neon on `google` only. They run Argon and Carbon at
+`medium`, and Hydrogen and Neon at `high`. `reasoning_effort` is `low` (the default), `medium` or
+`high`, and becomes Gemini's thinking level of the same name on both routes. Gemini 3
 models cannot turn thinking off, so `none` is rejected, and neither model offers `minimal`.
 `max_tokens` is 32768: Gemini counts thinking against it, and a thinking level sets no fixed
 budget.
@@ -313,6 +315,14 @@ plain string.
 Samples that arrive while the GPU is busy are answered together by one `system_one_batch` call,
 which packs them without padding. d1's bf16 kernels differ by batch shape, so which samples share
 a batch can move a probability in its last digits from one run to the next.
+
+`d1` also serves `openrouter-decisions/gemini-decision-1`, which pins
+`openrouter-decisions/google/gemini-decision-1-20261111`. Gemini Decision 1 is Google's hosted
+decision model on OpenRouter's Decisions API. It takes d1's state and questions unchanged. The
+`openrouter-decisions` model provider sends each sample in a separate request and fails the run
+if a model other than the dated slug answers. When Google's input filter blocks a prompt, the
+API returns an error. The protocol records it as a
+[provider refusal](metrics.md#provider-refusals).
 
 ### GLiNER2.5-Decide
 
